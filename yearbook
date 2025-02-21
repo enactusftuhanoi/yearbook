@@ -1,0 +1,155 @@
+ <!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENACTUS FTU HANOI</title>
+    <link rel="icon" type="image/png" href="logotab.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            font-family: 'Montserrat', sans-serif;
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f8f8f8;
+        }
+
+        .password-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            padding: 20px;
+            border: 2px solid #f9b233;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+            background-color: #fff;
+            text-align: center;
+        }
+
+        .logo {
+            width: 150px;
+        }
+
+        input {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            width: 100%;
+            text-align: center;
+            outline: none;
+        }
+
+        button {
+            padding: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            background-color: #f9b233;
+            color: white;
+            border-radius: 5px;
+            width: 100%;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background-color: #e89c1d;
+        }
+
+        /* Modal thông báo lỗi */
+        .modal {
+            display: none; 
+            position: fixed; 
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            background: #ffebeb;
+            border: 2px solid #d32f2f;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal p {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #b71c1c;
+            font-weight: bold;
+        }
+
+        .modal button {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .modal button:hover {
+            background: #b71c1c;
+        }
+    </style>
+
+    <script>
+    
+
+        function checkPassword() {
+            let password = document.getElementById("password").value;
+            if (password === "gen16") {
+                window.location.replace("https://heyzine.com/flip-book/944fe3311c.html");
+            } else {
+                document.getElementById("errorModal").style.display = "block";
+            }
+        }
+
+        function closeModal() {
+            document.getElementById("errorModal").style.display = "none";
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            let input = document.getElementById("password");
+            if (input) {
+                input.addEventListener("keydown", function(event) {
+                    if (event.key === "Enter") {
+                        checkPassword();
+                    }
+                });
+            }
+        });
+    </script>
+</head>
+<body>
+
+    <div class="password-box">
+        <img src="logo.png" alt="Enactus Logo" class="logo">
+        <input type="password" id="password" placeholder="Nhập mật khẩu">
+        <button onclick="checkPassword()">Xác nhận</button>
+    </div>
+
+    <!-- Modal thông báo -->
+    <div id="errorModal" class="modal">
+        <p>Sai mật khẩu rồi người đẹp 😒</p>
+        <button onclick="closeModal()">OK</button>
+    </div>
+
+</body>
+</html>

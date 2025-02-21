@@ -116,18 +116,21 @@
    
     <script>
         function updateCountdown() {
-            const targetDate = new Date("February 22, 2025 06:30:00").getTime();
+            const targetDate = new Date("February 22, 2025 06:15:00").getTime();
             const now = new Date().getTime();
             const distance = targetDate - now;
 
             if (distance <= 0) {
-                // Ẩn countdown và phát video full screen
-                document.querySelector(".content").style.display = "none";
+                // Khi countdown xong, ẩn countdown và hiển thị video
+                document.querySelector(".content").style.display = "none"; // Ẩn countdown
                 document.querySelector("video").style.display = "block";  // Hiển thị video
-                document.querySelector("video").play();  // Phát video
-                
-                // Chuyển hướng sau khi video kết thúc
-                document.querySelector("video").onended = function() {
+
+                // Phát video
+                const videoElement = document.getElementById("video");
+                videoElement.play();
+
+                // Sau khi video kết thúc, chuyển hướng sang yearbook.html
+                videoElement.onended = function() {
                     window.location.replace("yearbook.html");
                 };
 
@@ -145,7 +148,7 @@
 
         // Dừng lại khi countdown kết thúc
         function clearIntervalIfComplete() {
-            const targetDate = new Date("February 22, 2025 06:30:00").getTime();
+            const targetDate = new Date("February 22, 2025 06:15:00").getTime();
             const now = new Date().getTime();
             const distance = targetDate - now;
             if (distance <= 0) {

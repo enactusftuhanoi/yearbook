@@ -19,6 +19,7 @@
             text-align: center;
             padding: 20px;
             overflow: hidden;
+            position: relative;
         }
         .logo {
             width: 150px;
@@ -70,6 +71,17 @@
             color: #7f8c8d;
         }
 
+        /* Video */
+        video {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         @media (max-width: 600px) {
             .countdown-container {
                 display: grid;
@@ -95,15 +107,30 @@
             <div class="countdown-box"><span id="seconds">0</span><label>Seconds</label></div>
         </div>
     </div>
+
+    <!-- Video -->
+    <video id="video" autoplay muted>
+        <source src="video.mp4" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
    
     <script>
         function updateCountdown() {
-            const targetDate = new Date("February 22, 2025 06:20:00").getTime();
+            const targetDate = new Date("February 22, 2025 06:15:00").getTime();
             const now = new Date().getTime();
             const distance = targetDate - now;
 
             if (distance <= 0) {
-                window.location.replace("yearbook.html");
+                // Ẩn countdown và phát video full screen
+                document.querySelector(".content").style.display = "none";
+                document.querySelector("video").style.display = "block";  // Hiển thị video
+                document.querySelector("video").play();  // Phát video
+                
+                // Chuyển hướng sau khi video kết thúc
+                document.querySelector("video").onended = function() {
+                    window.location.replace("yearbook.html");
+                };
+
                 return;  // Dừng không kiểm tra nữa
             }
 
@@ -118,7 +145,7 @@
 
         // Dừng lại khi countdown kết thúc
         function clearIntervalIfComplete() {
-            const targetDate = new Date("February 22, 2025 06:20:00").getTime();
+            const targetDate = new Date("February 22, 2025 06:15:00").getTime();
             const now = new Date().getTime();
             const distance = targetDate - now;
             if (distance <= 0) {

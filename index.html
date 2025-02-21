@@ -35,6 +35,8 @@
             justify-content: center;
             flex-grow: 1;
             width: 100%;
+            opacity: 1;
+            transition: opacity 1s ease-out;  /* Thêm hiệu ứng fade-out */
         }
         h1 {
             font-size: clamp(1.5rem, 3vw, 2.5rem);
@@ -109,7 +111,7 @@
     </div>
 
     <!-- Video -->
-    <video id="video" autoplay muted>
+    <video id="video">
         <source src="video.mp4" type="video/mp4">
         Your browser does not support the video tag.
     </video>
@@ -121,18 +123,19 @@
             const distance = targetDate - now;
 
             if (distance <= 0) {
-                // Khi countdown xong, ẩn countdown và hiển thị video
-                document.querySelector(".content").style.display = "none"; // Ẩn countdown
-                document.querySelector("video").style.display = "block";  // Hiển thị video
+                // Khi countdown xong, bắt đầu fade-out
+                document.querySelector(".content").style.opacity = "0";  // Fade-out nội dung
+                setTimeout(function() {
+                    // Sau khi fade-out xong, ẩn countdown và hiển thị video
+                    document.querySelector(".content").style.display = "none"; // Ẩn countdown
+                    document.querySelector("video").style.display = "block";  // Hiển thị video
 
-                // Phát video
-                const videoElement = document.getElementById("video");
-                videoElement.play();
+                    // Sau khi video kết thúc, chuyển hướng sang yearbook.html
+                    setTimeout(function() {
+                        window.location.replace("yearbook.html");
+                    }, 5000);  // Chờ 5 giây trước khi chuyển hướng
 
-                // Sau khi video kết thúc, chuyển hướng sang yearbook.html
-                videoElement.onended = function() {
-                    window.location.replace("yearbook.html");
-                };
+                }, 1000);  // Thời gian fade-out là 1 giây
 
                 return;  // Dừng không kiểm tra nữa
             }

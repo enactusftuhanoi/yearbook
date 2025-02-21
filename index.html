@@ -85,7 +85,7 @@
     </style>
 </head>
 <body>
-    <img src="logotrang.png" alt="Logo trang" class="logo"> <!-- Logo trang -->
+    <img src="logo.png" alt="Logo den" class="logo"> <!-- Logo den -->
     <div class="content">
         <h1>Coming soon</h1>
         <div class="countdown-container">
@@ -98,12 +98,12 @@
    
     <script>
         function updateCountdown() {
-            const targetDate = new Date("February 22, 2025 06:08:00").getTime();
+            const targetDate = new Date("February 22, 2025 06:11:00").getTime();
             const now = new Date().getTime();
             const distance = targetDate - now;
 
             if (distance <= 0) {
-                window.location.replace("https://enactusftuhanoi.w3spaces.com/yearbook.html");
+                window.location.replace("https://enactusftuhanoi.github.io/yearbook/yearbook.html");
                 return;  // Dừng không kiểm tra nữa
             }
 
@@ -118,7 +118,7 @@
 
         // Dừng lại khi countdown kết thúc
         function clearIntervalIfComplete() {
-            const targetDate = new Date("February 22, 2025 06:08:00").getTime();
+            const targetDate = new Date("February 22, 2025 06:11:00").getTime();
             const now = new Date().getTime();
             const distance = targetDate - now;
             if (distance <= 0) {

@@ -1,11 +1,11 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ENACTUS FTU HANOI</title>
-    <link rel="icon" type="image/png" href="logotab.png">
-    
+    <link rel="icon" type="image/png" href="logotab.png"> <!-- Logo tab -->
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
 
@@ -110,8 +110,6 @@
     </style>
 
     <script>
-    
-
         function checkPassword() {
             let password = document.getElementById("password").value;
             if (password === "gen16") {
@@ -140,7 +138,7 @@
 <body>
 
     <div class="password-box">
-        <img src="logo.png" alt="Enactus Logo" class="logo">
+        <img src="logotrang.png" alt="Logo trang" class="logo"> <!-- Logo trang -->
         <input type="password" id="password" placeholder="Nhập mật khẩu">
         <button onclick="checkPassword()">Xác nhận</button>
     </div>

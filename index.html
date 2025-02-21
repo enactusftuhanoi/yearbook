@@ -70,7 +70,6 @@
             color: #7f8c8d;
         }
 
-
         @media (max-width: 600px) {
             .countdown-container {
                 display: grid;
@@ -96,45 +95,29 @@
             <div class="countdown-box"><span id="seconds">0</span><label>Seconds</label></div>
         </div>
     </div>
-   
+
     <script>
         function updateCountdown() {
-            const targetDate = new Date("February 22, 2025 06:41:00").getTime();
+            const targetDate = new Date("February 22, 2025 06:38:00").getTime();
             const now = new Date().getTime();
             const distance = targetDate - now;
 
-
             if (distance <= 0) {
+                // Khi countdown kết thúc, chuyển hướng ngay
                 window.location.replace("yearbook.html");
                 return;  // Dừng không kiểm tra nữa
             }
 
-
+            // Cập nhật countdown
             document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
             document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
         }
-       
-        updateCountdown();  // Gọi lần đầu tiên
+
+        // Gọi lần đầu tiên và sau đó cập nhật mỗi giây
+        updateCountdown();  
         const countdownInterval = setInterval(updateCountdown, 1000);  // Đếm ngược mỗi giây
-
-
-        // Dừng lại khi countdown kết thúc
-        function clearIntervalIfComplete() {
-            const targetDate = new Date("February 22, 2025 06:41:00").getTime();
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-            if (distance <= 0) {
-                clearInterval(countdownInterval);  // Dừng setInterval khi countdown xong
-            }
-        }
-
-
-        setInterval(clearIntervalIfComplete, 1000);  // Kiểm tra và dừng mỗi giây
     </script>
 </body>
 </html>
-
-
-

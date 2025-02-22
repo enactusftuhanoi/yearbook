@@ -105,12 +105,16 @@
     <audio id="audio" src="audio.mp3"></audio>
 
     <script>
-        const targetDate = new Date("2025-02-23T04:38:30").getTime();
+        const targetDate = new Date("2025-02-23T04:42:30").getTime();
+
+        function redirectToYearbook() {
+            window.location.href = "yearbook.html";
+        }
 
         function checkAndRedirect() {
             const now = Date.now();
             if (now >= targetDate) {
-                startVideoAndAudio(); // Nếu đã hết countdown, chỉ phát video & audio
+                redirectToYearbook(); // Nếu đã hết countdown, chuyển trang ngay lập tức
                 return true;
             }
             return false;
@@ -138,7 +142,7 @@
             // Khi video kết thúc, chuyển hướng
             video.onended = () => {
                 console.log("Video kết thúc, chuyển hướng...");
-                window.location.href = "yearbook.html";
+                redirectToYearbook();
             };
 
             // Chặn tua, pause và chỉnh sửa video

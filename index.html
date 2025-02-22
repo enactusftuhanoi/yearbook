@@ -27,13 +27,16 @@
             left: 50%;
             transform: translateX(-50%);
         }
-        .content {
+        .content, .video-container {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             flex-grow: 1;
             width: 100%;
+        }
+        .video-container {
+            display: none; /* Ẩn video ban đầu */
         }
         h1 {
             font-size: clamp(1.5rem, 3vw, 2.5rem);
@@ -69,6 +72,12 @@
             font-size: clamp(1rem, 2vw, 1.2rem);
             color: #7f8c8d;
         }
+        video {
+            width: 80%;
+            max-width: 800px;
+            border-radius: 15px;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
         @media (max-width: 600px) {
             .countdown-container {
                 display: grid;
@@ -85,8 +94,10 @@
 </head>
 <body>
     <img src="logo.png" alt="Logo" class="logo">
-    <div class="content">
-        <h1>Coming soon</h1>
+
+    <!-- Countdown -->
+    <div class="content" id="countdown-section">
+        <h1>Coming Soon</h1>
         <div class="countdown-container">
             <div class="countdown-box"><span id="days">0</span><label>Days</label></div>
             <div class="countdown-box"><span id="hours">0</span><label>Hours</label></div>
@@ -95,25 +106,30 @@
         </div>
     </div>
 
-    <script>
-        function checkAndRedirect() {
-            const targetDate = new Date("2025-02-23T00:00:00").getTime();
-            const now = Date.now();
+    <!-- Video -->
+    <div class="video-container" id="video-section">
+        <video id="intro-video" muted autoplay playsinline>
+            <source src="intro.mp4" type="video/mp4">
+            Trình duyệt của bạn không hỗ trợ video.
+        </video>
+    </div>
 
-            if (now >= targetDate) {
-                // Nếu đã hết thời gian, chuyển hướng ngay lập tức
-                window.location.href = "yearbook.html";
-                return true;
-            }
-            return false;
+    <script>
+        const targetDate = new Date("2025-02-23T00:56:00").getTime();
+        
+        function redirectToYearbook() {
+            window.location.href = "yearbook.html";
         }
 
         function updateCountdown() {
-            if (checkAndRedirect()) return; // Kiểm tra trước khi cập nhật đếm ngược
-
-            const targetDate = new Date("2025-02-23T00:00:00").getTime();
             const now = Date.now();
             const distance = targetDate - now;
+
+            if (distance <= 0) {
+                localStorage.setItem("countdownFinished", "true"); // Đánh dấu countdown đã kết thúc
+                startVideo();
+                return;
+            }
 
             document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
             document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -121,8 +137,23 @@
             document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
         }
 
-        // Kiểm tra ngay khi trang tải lên
-        if (!checkAndRedirect()) {
+        function startVideo() {
+            document.getElementById("countdown-section").style.display = "none"; // Ẩn countdown
+            document.getElementById("video-section").style.display = "flex"; // Hiện video
+
+            const video = document.getElementById("intro-video");
+            video.play();
+
+            // Khi video kết thúc, chuyển hướng
+            video.onended = function () {
+                redirectToYearbook();
+            };
+        }
+
+        // Kiểm tra trạng thái countdown
+        if (localStorage.getItem("countdownFinished") === "true" || Date.now() >= targetDate) {
+            redirectToYearbook(); // Nếu countdown đã kết thúc, chuyển ngay đến yearbook.html
+        } else {
             updateCountdown();
             setInterval(updateCountdown, 1000);
         }

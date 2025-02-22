@@ -19,13 +19,7 @@
             text-align: center;
             padding: 20px;
             overflow: hidden;
-            transition: opacity 1s ease-in-out;
         }
-
-        .fade-out {
-            opacity: 0;
-        }
-
         .logo {
             width: 150px;
             position: absolute;
@@ -33,7 +27,6 @@
             left: 50%;
             transform: translateX(-50%);
         }
-
         .content {
             display: flex;
             flex-direction: column;
@@ -42,70 +35,108 @@
             flex-grow: 1;
             width: 100%;
         }
-
-        .video-container {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: black;
-            overflow: hidden;
+        h1 {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-weight: 700;
         }
-
-        video {
+        .countdown-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
+            max-width: 700px;
+            flex-wrap: nowrap;
+            gap: 20px;
+        }
+        .countdown-box {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+            min-width: 120px;
+            flex: 1;
+        }
+        .hidden {
+            display: none;
+        }
+        .countdown-box span {
+            display: block;
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: bold;
+        }
+        .countdown-box label {
+            font-size: clamp(1rem, 2vw, 1.2rem);
+            color: #7f8c8d;
+        }
+        video {
+            max-width: 80%;
+            border-radius: 15px;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+        }
+        @media (max-width: 600px) {
+            .countdown-container {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+                max-width: 400px;
+            }
+            .countdown-box {
+                padding: 15px;
+                min-width: 80px;
+            }
         }
     </style>
 </head>
 <body>
     <img src="logo.png" alt="Logo" class="logo">
-
-    <div class="content" id="countdown-section">
-        <h1>Coming Soon</h1>
-        <div class="countdown-container">
+    <div class="content" id="content">
+        <h1 id="title">Coming soon</h1>
+        <div class="countdown-container" id="countdown">
             <div class="countdown-box"><span id="days">0</span><label>Days</label></div>
             <div class="countdown-box"><span id="hours">0</span><label>Hours</label></div>
             <div class="countdown-box"><span id="minutes">0</span><label>Minutes</label></div>
             <div class="countdown-box"><span id="seconds">0</span><label>Seconds</label></div>
         </div>
-    </div>
-
-    <div class="video-container" id="video-section">
-        <video id="intro-video" playsinline>
+        <video id="video" class="hidden" controls>
             <source src="video.mp4" type="video/mp4">
-            Trình duyệt của bạn không hỗ trợ video.
         </video>
-        <audio id="background-audio" src="audio.mp3"></audio>
+        <audio id="audio" class="hidden" src="audio.mp3"></audio>
     </div>
 
     <script>
-        const targetDate = new Date("2025-02-23T04:06:00").getTime();
-        const video = document.getElementById("intro-video");
-        const audio = document.getElementById("background-audio");
-        let countdownInterval;
-
-        function redirectToYearbook() {
-            document.body.classList.add("fade-out");
-            setTimeout(() => {
+        function checkAndRedirect() {
+            const targetDate = new Date("2025-02-23T04:11:30").getTime();
+            const now = Date.now();
+            if (now >= targetDate) {
                 window.location.href = "yearbook.html";
-            }, 1000);
+                return true;
+            }
+            return false;
+        }
+
+        function startVideoAndAudio() {
+            document.getElementById("countdown").classList.add("hidden");
+            document.getElementById("title").classList.add("hidden");
+            const video = document.getElementById("video");
+            const audio = document.getElementById("audio");
+            video.classList.remove("hidden");
+            video.play();
+            setTimeout(() => audio.play(), 2000);
+            video.onended = () => window.location.href = "yearbook.html";
         }
 
         function updateCountdown() {
+            if (checkAndRedirect()) return;
+            const targetDate = new Date("2025-02-23T04:11:30").getTime();
             const now = Date.now();
             const distance = targetDate - now;
 
             if (distance <= 0) {
-                clearInterval(countdownInterval);
-                localStorage.setItem("countdownFinished", "true");
-                startVideo();
+                startVideoAndAudio();
                 return;
             }
 
@@ -115,35 +146,10 @@
             document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
         }
 
-        function startVideo() {
-            if (document.getElementById("video-section").style.display === "block") return;
-            document.getElementById("countdown-section").style.display = "none";
-            document.getElementById("video-section").style.display = "block";
-
-            video.muted = false;
-            video.currentTime = 0;
-            video.play().catch(() => {
-                video.muted = true;
-                video.play();
-            });
-
-            setTimeout(() => {
-                audio.play();
-            }, 2000);
-
-            video.onended = redirectToYearbook;
+        if (!checkAndRedirect()) {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
         }
-
-        function checkCountdownStatus() {
-            if (localStorage.getItem("countdownFinished") === "true" || Date.now() >= targetDate) {
-                redirectToYearbook();
-            } else {
-                updateCountdown();
-                countdownInterval = setInterval(updateCountdown, 1000);
-            }
-        }
-
-        checkCountdownStatus();
     </script>
 </body>
 </html>

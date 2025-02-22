@@ -48,7 +48,6 @@
             align-items: center;
             width: 100%;
             max-width: 700px;
-            flex-wrap: nowrap;
             gap: 20px;
         }
         .countdown-box {
@@ -60,9 +59,6 @@
             min-width: 120px;
             flex: 1;
         }
-        .hidden {
-            display: none;
-        }
         .countdown-box span {
             display: block;
             font-size: clamp(1.5rem, 4vw, 2.5rem);
@@ -71,6 +67,9 @@
         .countdown-box label {
             font-size: clamp(1rem, 2vw, 1.2rem);
             color: #7f8c8d;
+        }
+        .hidden {
+            display: none;
         }
         video {
             max-width: 80%;
@@ -101,15 +100,16 @@
             <div class="countdown-box"><span id="minutes">0</span><label>Minutes</label></div>
             <div class="countdown-box"><span id="seconds">0</span><label>Seconds</label></div>
         </div>
-        <video id="video" class="hidden" controls>
+        <video id="video" class="hidden" controls muted>
             <source src="video.mp4" type="video/mp4">
         </video>
         <audio id="audio" class="hidden" src="audio.mp3"></audio>
     </div>
 
     <script>
+        const targetDate = new Date("2025-02-23T04:14:30").getTime();
+        
         function checkAndRedirect() {
-            const targetDate = new Date("2025-02-23T04:11:30").getTime();
             const now = Date.now();
             if (now >= targetDate) {
                 window.location.href = "yearbook.html";
@@ -121,17 +121,27 @@
         function startVideoAndAudio() {
             document.getElementById("countdown").classList.add("hidden");
             document.getElementById("title").classList.add("hidden");
+
             const video = document.getElementById("video");
             const audio = document.getElementById("audio");
+
             video.classList.remove("hidden");
-            video.play();
-            setTimeout(() => audio.play(), 2000);
-            video.onended = () => window.location.href = "yearbook.html";
+            video.play().then(() => {
+                console.log("Video đang phát...");
+                setTimeout(() => {
+                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
+                }, 2000);
+            }).catch(err => console.log("Lỗi phát video:", err));
+
+            video.onended = () => {
+                console.log("Video kết thúc, chuyển hướng...");
+                window.location.href = "yearbook.html";
+            };
         }
 
         function updateCountdown() {
             if (checkAndRedirect()) return;
-            const targetDate = new Date("2025-02-23T04:11:30").getTime();
+
             const now = Date.now();
             const distance = targetDate - now;
 
@@ -146,6 +156,7 @@
             document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
         }
 
+        // Kiểm tra ngay khi tải trang
         if (!checkAndRedirect()) {
             updateCountdown();
             setInterval(updateCountdown, 1000);

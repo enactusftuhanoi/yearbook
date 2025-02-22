@@ -77,6 +77,13 @@
             max-width: 800px;
             border-radius: 15px;
             box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+        .gift-box {
+            display: none;
+            cursor: pointer;
+            width: 150px;
+            margin-top: 20px;
         }
         @media (max-width: 600px) {
             .countdown-container {
@@ -108,14 +115,15 @@
 
     <!-- Video -->
     <div class="video-container" id="video-section">
-        <video id="intro-video" muted autoplay playsinline>
+        <video id="intro-video" playsinline>
             <source src="video.mp4" type="video/mp4">
             Trình duyệt của bạn không hỗ trợ video.
         </video>
+        <img src="giftbox.png" alt="Hộp quà" class="gift-box" id="gift-box">
     </div>
 
     <script>
-        const targetDate = new Date("2025-02-23T01:00:00").getTime();
+        const targetDate = new Date("2025-02-23T01:04:00").getTime();
         
         function redirectToYearbook() {
             window.location.href = "yearbook.html";
@@ -126,7 +134,7 @@
             const distance = targetDate - now;
 
             if (distance <= 0) {
-                localStorage.setItem("countdownFinished", "true"); // Đánh dấu countdown đã kết thúc
+                localStorage.setItem("countdownFinished", "true");
                 startVideo();
                 return;
             }
@@ -138,21 +146,32 @@
         }
 
         function startVideo() {
-            document.getElementById("countdown-section").style.display = "none"; // Ẩn countdown
-            document.getElementById("video-section").style.display = "flex"; // Hiện video
+            document.getElementById("countdown-section").style.display = "none"; 
+            document.getElementById("video-section").style.display = "flex"; 
 
             const video = document.getElementById("intro-video");
+            video.muted = false; // Bật âm thanh
             video.play();
 
-            // Khi video kết thúc, chuyển hướng
+            video.addEventListener("click", () => {
+                if (video.requestFullscreen) {
+                    video.requestFullscreen();
+                } else if (video.webkitRequestFullscreen) {
+                    video.webkitRequestFullscreen();
+                } else if (video.msRequestFullscreen) {
+                    video.msRequestFullscreen();
+                }
+            });
+
             video.onended = function () {
-                redirectToYearbook();
+                document.getElementById("gift-box").style.display = "block"; 
             };
         }
 
-        // Kiểm tra trạng thái countdown
+        document.getElementById("gift-box").addEventListener("click", redirectToYearbook);
+
         if (localStorage.getItem("countdownFinished") === "true" || Date.now() >= targetDate) {
-            redirectToYearbook(); // Nếu countdown đã kết thúc, chuyển ngay đến yearbook.html
+            redirectToYearbook();
         } else {
             updateCountdown();
             setInterval(updateCountdown, 1000);

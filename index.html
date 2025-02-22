@@ -97,27 +97,54 @@
     </div>
 
     <script>
-        function updateCountdown() {
-            const targetDate = new Date("February 22, 2025 22:50:00").getTime();
-            const now = new Date().getTime();
-            const distance = targetDate - now;
+       function updateCountdown() {
+    const targetDate = new Date("February 22, 2025 22:55:00").getTime();
+    const now = new Date().getTime();
+    const distance = targetDate - now;
 
-            if (distance <= 0) {
-                // Khi countdown kết thúc, chuyển hướng ngay
-                window.location.replace("yearbook.html");
-                return;  // Dừng không kiểm tra nữa
-            }
+    if (distance <= 0) {
+        clearInterval(countdownInterval);
+        startIntroVideo(); // Bắt đầu phát video thay vì chuyển hướng ngay
+        return;
+    }
 
-            // Cập nhật countdown
-            document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
-            document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
-        }
+    document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
+    document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+    document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
+}
 
-        // Gọi lần đầu tiên và sau đó cập nhật mỗi giây
-        updateCountdown();  
-        const countdownInterval = setInterval(updateCountdown, 1000);  // Đếm ngược mỗi giây
+function startIntroVideo() {
+    const videoContainer = document.createElement("div");
+    videoContainer.style.position = "fixed";
+    videoContainer.style.top = "0";
+    videoContainer.style.left = "0";
+    videoContainer.style.width = "100vw";
+    videoContainer.style.height = "100vh";
+    videoContainer.style.backgroundColor = "black";
+    videoContainer.style.display = "flex";
+    videoContainer.style.justifyContent = "center";
+    videoContainer.style.alignItems = "center";
+    videoContainer.style.zIndex = "9999";
+
+    const video = document.createElement("video");
+    video.src = "intro.mp4";
+    video.style.width = "100%";
+    video.style.height = "100%";
+    video.autoplay = true;
+    video.controls = false;
+    
+    video.onended = function() {
+        window.location.replace("yearbook.html"); // Chuyển trang khi video kết thúc
+    };
+
+    videoContainer.appendChild(video);
+    document.body.appendChild(videoContainer);
+}
+
+updateCountdown();
+const countdownInterval = setInterval(updateCountdown, 1000);
+  // Đếm ngược mỗi giây
     </script>
 </body>
 </html>

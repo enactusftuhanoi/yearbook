@@ -19,6 +19,7 @@
             text-align: center;
             padding: 20px;
             overflow: hidden;
+            transition: background 1s ease-in-out;
         }
         .logo {
             width: 150px;
@@ -26,17 +27,16 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
+            transition: opacity 1s;
         }
-        .content, .video-container {
+        .content {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             flex-grow: 1;
             width: 100%;
-        }
-        .video-container {
-            display: none; /* Ẩn video ban đầu */
+            transition: opacity 1s;
         }
         h1 {
             font-size: clamp(1.5rem, 3vw, 2.5rem);
@@ -72,30 +72,22 @@
             font-size: clamp(1rem, 2vw, 1.2rem);
             color: #7f8c8d;
         }
-        video {
-            width: 80%;
-            max-width: 800px;
-            border-radius: 15px;
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-        }
-        .gift-box {
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
             display: none;
-            cursor: pointer;
-            width: 150px;
-            margin-top: 20px;
+            justify-content: center;
+            align-items: center;
+            background: black;
+            transition: opacity 1s;
         }
-        @media (max-width: 600px) {
-            .countdown-container {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-                max-width: 400px;
-            }
-            .countdown-box {
-                padding: 15px;
-                min-width: 80px;
-            }
+        video {
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
         }
     </style>
 </head>
@@ -115,18 +107,20 @@
 
     <!-- Video -->
     <div class="video-container" id="video-section">
-        <video id="intro-video" playsinline>
+        <video id="intro-video" autoplay playsinline>
             <source src="video.mp4" type="video/mp4">
             Trình duyệt của bạn không hỗ trợ video.
         </video>
-        <img src="giftbox.png" alt="Hộp quà" class="gift-box" id="gift-box">
     </div>
 
     <script>
-        const targetDate = new Date("2025-02-23T01:04:00").getTime();
+        const targetDate = new Date("2025-02-23T01:09:00").getTime();
         
         function redirectToYearbook() {
-            window.location.href = "yearbook.html";
+            document.body.style.opacity = "0"; // Hiệu ứng fade out
+            setTimeout(() => {
+                window.location.href = "yearbook.html";
+            }, 1000);
         }
 
         function updateCountdown() {
@@ -146,32 +140,25 @@
         }
 
         function startVideo() {
-            document.getElementById("countdown-section").style.display = "none"; 
-            document.getElementById("video-section").style.display = "flex"; 
+            document.getElementById("countdown-section").style.opacity = "0";
+            document.querySelector(".logo").style.opacity = "0";
+            setTimeout(() => {
+                document.getElementById("countdown-section").style.display = "none";
+                document.querySelector(".logo").style.display = "none";
+                document.getElementById("video-section").style.display = "flex";
+                document.body.style.background = "black";
+            }, 1000);
 
             const video = document.getElementById("intro-video");
             video.muted = false; // Bật âm thanh
-            video.play();
-
-            video.addEventListener("click", () => {
-                if (video.requestFullscreen) {
-                    video.requestFullscreen();
-                } else if (video.webkitRequestFullscreen) {
-                    video.webkitRequestFullscreen();
-                } else if (video.msRequestFullscreen) {
-                    video.msRequestFullscreen();
-                }
-            });
 
             video.onended = function () {
-                document.getElementById("gift-box").style.display = "block"; 
+                redirectToYearbook();
             };
         }
 
-        document.getElementById("gift-box").addEventListener("click", redirectToYearbook);
-
         if (localStorage.getItem("countdownFinished") === "true" || Date.now() >= targetDate) {
-            redirectToYearbook();
+            startVideo();
         } else {
             updateCountdown();
             setInterval(updateCountdown, 1000);

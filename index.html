@@ -72,7 +72,7 @@
     </div>
 
     <script>
-        const targetDate = new Date("2025-02-23T03:39:00").getTime();
+        const targetDate = new Date("2025-02-23T03:41:00").getTime();
         const video = document.getElementById("intro-video");
         const audio = document.getElementById("background-audio");
         const countdownTimer = document.getElementById("countdown-timer");
@@ -104,7 +104,7 @@
             audio.currentTime = 0;
 
             video.play().then(() => {
-                setTimeout(() => audio.play(), 2000);
+                setTimeout(() => audio.play(), 1000);
             }).catch(error => {
                 document.addEventListener("click", enableAudio, { once: true });
                 document.addEventListener("touchstart", enableAudio, { once: true });
@@ -116,7 +116,7 @@
         function enableAudio() {
             video.muted = false;
             video.play();
-            setTimeout(() => audio.play(), 2000);
+            setTimeout(() => audio.play(), 1000);
         }
 
         function redirectToYearbook() {

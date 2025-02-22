@@ -102,9 +102,14 @@
             const distance = targetDate - now;
 
             if (distance <= 0) {
-                clearInterval(countdownInterval);
-                window.location.replace("yearbook.html");
-                return;
+    clearInterval(countdownInterval);  // Dừng đếm ngược khi hết thời gian
+    document.getElementById("days").textContent = "0";
+    document.getElementById("hours").textContent = "0";
+    document.getElementById("minutes").textContent = "0";
+    document.getElementById("seconds").textContent = "0";
+    return;
+}
+
             }
 
             document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));

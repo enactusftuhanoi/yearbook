@@ -27,124 +27,72 @@
             left: 50%;
             transform: translateX(-50%);
         }
-        .content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex-grow: 1;
-            width: 100%;
-        }
-        h1 {
-            font-size: clamp(1.5rem, 3vw, 2.5rem);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-        .countdown-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 100%;
-            max-width: 700px;
-            flex-wrap: nowrap;
-            gap: 20px;
-        }
-        .countdown-box {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
-            min-width: 120px;
-            flex: 1;
-        }
-        .countdown-box span {
-            display: block;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
+        .countdown {
+            font-size: 2em;
             font-weight: bold;
         }
-        .countdown-box label {
-            font-size: clamp(1rem, 2vw, 1.2rem);
-            color: #7f8c8d;
+        .video-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
         }
-
-        @media (max-width: 600px) {
-            .countdown-container {
-                display: grid;
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-                max-width: 400px;
-            }
-            .countdown-box {
-                padding: 15px;
-                min-width: 80px;
-            }
+        video {
+            width: 100%;
+            height: 100%;
         }
     </style>
 </head>
 <body>
     <img src="logo.png" alt="Logo" class="logo">
-    <div class="content">
-        <h1>Coming soon</h1>
-        <div class="countdown-container">
-            <div class="countdown-box"><span id="days">0</span><label>Days</label></div>
-            <div class="countdown-box"><span id="hours">0</span><label>Hours</label></div>
-            <div class="countdown-box"><span id="minutes">0</span><label>Minutes</label></div>
-            <div class="countdown-box"><span id="seconds">0</span><label>Seconds</label></div>
-        </div>
+    <div class="countdown">
+        <span id="days">00</span>d :
+        <span id="hours">00</span>h :
+        <span id="minutes">00</span>m :
+        <span id="seconds">00</span>s
+    </div>
+    
+    <div class="video-container" id="videoContainer">
+        <video id="introVideo" src="intro.mp4" autoplay></video>
     </div>
 
     <script>
-       function updateCountdown() {
-    const targetDate = new Date("February 22, 2025 22:55:00").getTime();
-    const now = new Date().getTime();
-    const distance = targetDate - now;
+        function updateCountdown() {
+            const targetDate = new Date("February 22, 2025 22:50:00").getTime();
+            const now = new Date().getTime();
+            const distance = targetDate - now;
 
-    if (distance <= 0) {
-        clearInterval(countdownInterval);
-        startIntroVideo(); // Bắt đầu phát video thay vì chuyển hướng ngay
-        return;
-    }
+            if (distance <= 0) {
+                clearInterval(countdownInterval);
+                startIntroVideo();
+                return;
+            }
 
-    document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
-    document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-    document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-    document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
-}
+            document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
+            document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
+        }
 
-function startIntroVideo() {
-    const videoContainer = document.createElement("div");
-    videoContainer.style.position = "fixed";
-    videoContainer.style.top = "0";
-    videoContainer.style.left = "0";
-    videoContainer.style.width = "100vw";
-    videoContainer.style.height = "100vh";
-    videoContainer.style.backgroundColor = "black";
-    videoContainer.style.display = "flex";
-    videoContainer.style.justifyContent = "center";
-    videoContainer.style.alignItems = "center";
-    videoContainer.style.zIndex = "9999";
+        function startIntroVideo() {
+            const videoContainer = document.getElementById("videoContainer");
+            const video = document.getElementById("introVideo");
+            videoContainer.style.display = "flex";
+            video.play();
+            video.onended = function() {
+                window.location.replace("yearbook.html");
+            };
+        }
 
-    const video = document.createElement("video");
-    video.src = "intro.mp4";
-    video.style.width = "100%";
-    video.style.height = "100%";
-    video.autoplay = true;
-    video.controls = false;
-    
-    video.onended = function() {
-        window.location.replace("yearbook.html"); // Chuyển trang khi video kết thúc
-    };
-
-    videoContainer.appendChild(video);
-    document.body.appendChild(videoContainer);
-}
-
-updateCountdown();
-const countdownInterval = setInterval(updateCountdown, 1000);
-  // Đếm ngược mỗi giây
+        updateCountdown();
+        const countdownInterval = setInterval(updateCountdown, 1000);
     </script>
 </body>
 </html>

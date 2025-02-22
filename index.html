@@ -105,12 +105,12 @@
     <audio id="audio" src="audio.mp3"></audio>
 
     <script>
-        const targetDate = new Date("2025-02-23T04:36:30").getTime();
+        const targetDate = new Date("2025-02-23T04:38:30").getTime();
 
         function checkAndRedirect() {
             const now = Date.now();
             if (now >= targetDate) {
-                window.location.href = "yearbook.html";
+                startVideoAndAudio(); // Nếu đã hết countdown, chỉ phát video & audio
                 return true;
             }
             return false;
@@ -135,6 +135,7 @@
                 }, 2000);
             }).catch(err => console.log("Lỗi phát video:", err));
 
+            // Khi video kết thúc, chuyển hướng
             video.onended = () => {
                 console.log("Video kết thúc, chuyển hướng...");
                 window.location.href = "yearbook.html";
@@ -147,8 +148,6 @@
         }
 
         function updateCountdown() {
-            if (checkAndRedirect()) return;
-
             const now = Date.now();
             const distance = targetDate - now;
 

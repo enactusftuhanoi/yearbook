@@ -19,7 +19,11 @@
             text-align: center;
             padding: 20px;
             overflow: hidden;
-            transition: opacity 1s;
+            transition: opacity 1s ease-in-out;
+        }
+
+        .fade-out {
+            opacity: 0;
         }
 
         .logo {
@@ -47,11 +51,12 @@
             width: 100vw;
             height: 100vh;
             background: black;
+            overflow: hidden;
         }
 
         video {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             object-fit: cover;
             position: absolute;
             top: 0;
@@ -72,6 +77,7 @@
             align-items: center;
             width: 100%;
             max-width: 700px;
+            flex-wrap: nowrap;
             gap: 20px;
         }
 
@@ -126,18 +132,19 @@
 
     <!-- Video -->
     <div class="video-container" id="video-section">
-        <video id="intro-video" autoplay playsinline>
+        <video id="intro-video" playsinline>
             <source src="video.mp4" type="video/mp4">
             Trình duyệt của bạn không hỗ trợ video.
         </video>
     </div>
 
     <script>
-        const targetDate = new Date("2025-02-23T03:01:00").getTime();
+        const targetDate = new Date("2025-02-23T03:07:00").getTime();
         const video = document.getElementById("intro-video");
+        let countdownInterval;
 
         function redirectToYearbook() {
-            document.body.style.opacity = "0"; // Fade out trang web
+            document.body.classList.add("fade-out");
             setTimeout(() => {
                 window.location.href = "yearbook.html";
             }, 1000);
@@ -148,7 +155,8 @@
             const distance = targetDate - now;
 
             if (distance <= 0) {
-                localStorage.setItem("countdownFinished", "true"); 
+                clearInterval(countdownInterval); // Dừng countdown khi hết giờ
+                localStorage.setItem("countdownFinished", "true");
                 startVideo();
                 return;
             }
@@ -160,35 +168,52 @@
         }
 
         function startVideo() {
-            if (document.getElementById("video-section").style.display === "block") return;
+            if (document.getElementById("video-section").style.display === "block") return; // Tránh gọi lại nhiều lần
 
             document.getElementById("countdown-section").style.display = "none";
             document.getElementById("video-section").style.display = "block";
 
             video.muted = false;
             video.currentTime = 0;
-
+            
             video.play().then(() => {
                 console.log("Video started with sound.");
             }).catch(error => {
-                console.warn("Autoplay blocked, retrying with mute.");
+                console.warn("Autoplay blocked, trying with mute.");
                 video.muted = true;
                 video.play().then(() => {
                     setTimeout(() => {
                         video.muted = false;
                     }, 500);
+                }).catch(() => {
+                    console.warn("User interaction needed to unmute.");
                 });
             });
 
             video.onended = redirectToYearbook;
+
+            // Bắt sự kiện click/touch để mở tiếng nếu bị chặn
+            document.addEventListener("click", unmuteVideo);
+            document.addEventListener("touchstart", unmuteVideo);
         }
 
-        if (localStorage.getItem("countdownFinished") === "true" || Date.now() >= targetDate) {
-            redirectToYearbook();
-        } else {
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
+        function unmuteVideo() {
+            video.muted = false;
+            video.play();
+            document.removeEventListener("click", unmuteVideo);
+            document.removeEventListener("touchstart", unmuteVideo);
         }
+
+        function checkCountdownStatus() {
+            if (localStorage.getItem("countdownFinished") === "true" || Date.now() >= targetDate) {
+                redirectToYearbook();
+            } else {
+                updateCountdown();
+                countdownInterval = setInterval(updateCountdown, 1000);
+            }
+        }
+
+        checkCountdownStatus();
     </script>
 </body>
 </html>

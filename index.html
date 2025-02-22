@@ -19,7 +19,7 @@
             text-align: center;
             padding: 20px;
             overflow: hidden;
-            transition: opacity 1s ease-in-out; /* Hiệu ứng fade out */
+            transition: opacity 1s ease-in-out;
         }
 
         .fade-out {
@@ -139,8 +139,9 @@
     </div>
 
     <script>
-        const targetDate = new Date("2025-02-23T02:45:00").getTime();
+        const targetDate = new Date("2025-02-23T02:48:00").getTime();
         const video = document.getElementById("intro-video");
+        let countdownInterval;
 
         function redirectToYearbook() {
             document.body.classList.add("fade-out");
@@ -154,6 +155,7 @@
             const distance = targetDate - now;
 
             if (distance <= 0) {
+                clearInterval(countdownInterval); // Dừng countdown khi hết giờ
                 localStorage.setItem("countdownFinished", "true");
                 startVideo();
                 return;
@@ -166,10 +168,12 @@
         }
 
         function startVideo() {
+            if (document.getElementById("video-section").style.display === "block") return; // Tránh gọi lại nhiều lần
+
             document.getElementById("countdown-section").style.display = "none";
             document.getElementById("video-section").style.display = "block";
 
-            video.muted = false; // Bật âm thanh
+            video.muted = false;
             video.currentTime = 0;
             video.play().catch(() => {
                 video.muted = true;
@@ -179,13 +183,12 @@
             video.onended = redirectToYearbook;
         }
 
-        // Kiểm tra nếu countdown đã kết thúc trước đó, chuyển hướng luôn đến yearbook.html
         function checkCountdownStatus() {
             if (localStorage.getItem("countdownFinished") === "true" || Date.now() >= targetDate) {
                 redirectToYearbook();
             } else {
                 updateCountdown();
-                setInterval(updateCountdown, 1000);
+                countdownInterval = setInterval(updateCountdown, 1000);
             }
         }
 

@@ -83,11 +83,18 @@
       }
     }
     /* Video - ẩn ban đầu */
-    video {
-      display: none;
-      position: absolute;
+    .video-container {
+      position: fixed;
       top: 0;
       left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: black;
+      display: none;
+      justify-content: center;
+      align-items: center;
+    }
+    video {
       width: 100%;
       height: 100%;
       object-fit: cover;
@@ -106,30 +113,32 @@
     </div>
   </div>
 
-  <!-- Video element -->
-  <video id="video" controls>
-    <source src="video.mp4" type="video/mp4">
-    Trình duyệt của bạn không hỗ trợ thẻ video.
-  </video>
+  <!-- Video -->
+  <div class="video-container" id="videoContainer">
+    <video id="video" autoplay>
+      <source src="video.mp4" type="video/mp4">
+      Trình duyệt của bạn không hỗ trợ video.
+    </video>
+  </div>
 
   <script>
     function updateCountdown() {
-      const targetDate = new Date("February 22, 2025 21:26:00").getTime();
+      const targetDate = new Date("February 22, 2025 21:32:00").getTime();
       const now = new Date().getTime();
       const distance = targetDate - now;
 
       if (distance <= 0) {
         // Khi countdown kết thúc, ẩn nội dung countdown và hiển thị video
         document.querySelector(".content").style.display = "none";
-        const videoElement = document.getElementById("video");
-        videoElement.style.display = "block";
-        videoElement.play();
+        document.querySelector(".logo").style.display = "none";
+        const videoContainer = document.getElementById("videoContainer");
+        videoContainer.style.display = "flex";
 
-        // Khi video kết thúc, chuyển hướng sang yearbook.html
-        videoElement.onended = function() {
+        // Sau 36 giây, chuyển hướng
+        setTimeout(function() {
           window.location.replace("yearbook.html");
-        };
-        return; // Dừng cập nhật countdown
+        }, 36000);
+        return;
       }
 
       // Cập nhật countdown

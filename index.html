@@ -69,8 +69,6 @@
             font-size: clamp(1rem, 2vw, 1.2rem);
             color: #7f8c8d;
         }
-
-
         @media (max-width: 600px) {
             .countdown-container {
                 display: grid;
@@ -99,39 +97,24 @@
    
     <script>
         function updateCountdown() {
-            const targetDate = new Date("February 22, 2025 23:30:00").getTime();
-            const now = new Date().getTime();
+            const targetDate = new Date("2025-02-22T23:30:00").getTime(); // Định dạng chính xác
+            const now = Date.now();
             const distance = targetDate - now;
 
-
             if (distance <= 0) {
+                clearInterval(countdownInterval);
                 window.location.replace("yearbook.html");
-                return;  // Dừng không kiểm tra nữa
+                return;
             }
-
 
             document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
             document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
         }
-       
-        updateCountdown();  // Gọi lần đầu tiên
-        const countdownInterval = setInterval(updateCountdown, 1000);  // Đếm ngược mỗi giây
 
-
-        // Dừng lại khi countdown kết thúc
-        function clearIntervalIfComplete() {
-            const targetDate = new Date("February 22, 2025 23:30:00").getTime();
-            const now = new Date().getTime();
-            const distance = targetDate - now;
-            if (distance <= 0) {
-                clearInterval(countdownInterval);  // Dừng setInterval khi countdown xong
-            }
-        }
-
-
-        setInterval(clearIntervalIfComplete, 1000);  // Kiểm tra và dừng mỗi giây
+        updateCountdown(); // Cập nhật ngay lập tức
+        const countdownInterval = setInterval(updateCountdown, 1000); // Cập nhật mỗi giây
     </script>
 </body>
 </html>

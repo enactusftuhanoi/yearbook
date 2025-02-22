@@ -72,13 +72,30 @@
     </div>
 
     <script>
-        const targetDate = new Date("2025-02-23T03:32:00").getTime();
+        const targetDate = new Date("2025-02-23T03:36:00").getTime();
         const video = document.getElementById("intro-video");
         const audio = document.getElementById("background-audio");
+        const countdownTimer = document.getElementById("countdown-timer");
+
+        function updateCountdown() {
+            const now = Date.now();
+            const timeLeft = targetDate - now;
+
+            if (timeLeft <= 0) {
+                startVideo();
+                return;
+            }
+
+            const seconds = Math.floor((timeLeft / 1000) % 60);
+            const minutes = Math.floor((timeLeft / 1000 / 60) % 60);
+            const hours = Math.floor((timeLeft / 1000 / 60 / 60) % 24);
+            const days = Math.floor(timeLeft / 1000 / 60 / 60 / 24);
+
+            countdownTimer.innerHTML = `${days}d ${hours}h ${minutes}m ${seconds}s`;
+            setTimeout(updateCountdown, 1000);
+        }
 
         function startVideo() {
-            if (document.getElementById("video-section").style.display === "block") return;
-
             document.getElementById("countdown-section").style.display = "none";
             document.getElementById("video-section").style.display = "block";
 
@@ -87,7 +104,7 @@
             audio.currentTime = 0;
 
             video.play().then(() => {
-                setTimeout(() => audio.play(), 1000); // Phát audio sau video 1 giây
+                setTimeout(() => audio.play(), 2000);
             }).catch(error => {
                 document.addEventListener("click", enableAudio, { once: true });
                 document.addEventListener("touchstart", enableAudio, { once: true });
@@ -99,7 +116,7 @@
         function enableAudio() {
             video.muted = false;
             video.play();
-            setTimeout(() => audio.play(), 1000);
+            setTimeout(() => audio.play(), 2000);
         }
 
         function redirectToYearbook() {
@@ -109,15 +126,7 @@
             }, 1000);
         }
 
-        function checkCountdownStatus() {
-            if (Date.now() >= targetDate) {
-                startVideo();
-            } else {
-                setTimeout(checkCountdownStatus, 1000);
-            }
-        }
-
-        checkCountdownStatus();
+        updateCountdown();
     </script>
 </body>
 </html>

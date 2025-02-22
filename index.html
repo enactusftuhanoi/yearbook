@@ -97,20 +97,20 @@
     </div>
 
     <!-- Video 4K toàn màn hình không chỉnh sửa -->
-    <video id="video" class="fullscreen-video" playsinline muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate" autoplay>
+    <video id="video" class="fullscreen-video" playsinline muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate">
         <source src="video.mp4" type="video/mp4">
     </video>
 
-    <!-- Âm thanh tự phát -->
+    <!-- Âm thanh -->
     <audio id="audio" src="audio.mp3"></audio>
 
     <script>
-        const targetDate = new Date("2025-02-23T04:31:00").getTime();
+        const targetDate = new Date("2025-02-23T04:36:30").getTime();
 
         function checkAndRedirect() {
             const now = Date.now();
             if (now >= targetDate) {
-                startVideoAndAudio();
+                window.location.href = "yearbook.html";
                 return true;
             }
             return false;
@@ -126,8 +126,6 @@
             video.style.display = "block";  // Hiện video toàn màn hình
             video.play().then(() => {
                 console.log("Video đang phát...");
-
-                // Bỏ chế độ mute của video (nếu cần)
                 video.muted = false;
 
                 // Sau 2 giây, bật âm thanh
@@ -135,9 +133,7 @@
                     audio.volume = 1.0;
                     audio.play().catch(err => console.log("Lỗi phát audio:", err));
                 }, 2000);
-            }).catch(err => {
-                console.log("Lỗi phát video:", err);
-            });
+            }).catch(err => console.log("Lỗi phát video:", err));
 
             video.onended = () => {
                 console.log("Video kết thúc, chuyển hướng...");
@@ -166,12 +162,6 @@
             document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
         }
-
-        // Kích hoạt âm thanh ngay khi trang load
-        window.onload = () => {
-            const audio = document.getElementById("audio");
-            audio.play().catch(err => console.log("Trình duyệt chặn tự động phát, thử lại..."));
-        };
 
         if (!checkAndRedirect()) {
             updateCountdown();

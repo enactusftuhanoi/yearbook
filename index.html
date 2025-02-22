@@ -19,12 +19,11 @@
             text-align: center;
             padding: 20px;
             overflow: hidden;
-            margin: 0;
         }
         .logo {
-            width: 150px;
+            width: 100px;
             position: absolute;
-            top: 20px;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
         }
@@ -37,7 +36,7 @@
             width: 100%;
         }
         h1 {
-            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            font-size: clamp(1.5rem, 3vw, 2rem);
             letter-spacing: 2px;
             text-transform: uppercase;
             margin-bottom: 20px;
@@ -48,39 +47,45 @@
             justify-content: center;
             align-items: center;
             width: 100%;
-            max-width: 700px;
-            gap: 20px;
+            max-width: 500px;
+            gap: 10px;
+            flex-wrap: wrap;
         }
         .countdown-box {
             background: white;
-            padding: 25px;
-            border-radius: 15px;
+            padding: 15px;
+            border-radius: 10px;
             text-align: center;
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
-            min-width: 120px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            min-width: 80px;
             flex: 1;
         }
         .countdown-box span {
             display: block;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-size: 1.5rem;
             font-weight: bold;
         }
         .countdown-box label {
-            font-size: clamp(1rem, 2vw, 1.2rem);
+            font-size: 1rem;
             color: #7f8c8d;
         }
         .hidden {
             display: none;
         }
-        .fullscreen-video {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            display: none;
-            pointer-events: none;
+        video {
+            width: 100%;
+            max-width: 90%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        @media (max-width: 600px) {
+            .countdown-container {
+                max-width: 300px;
+            }
+            .countdown-box {
+                padding: 10px;
+                min-width: 60px;
+            }
         }
     </style>
 </head>
@@ -94,27 +99,19 @@
             <div class="countdown-box"><span id="minutes">0</span><label>Minutes</label></div>
             <div class="countdown-box"><span id="seconds">0</span><label>Seconds</label></div>
         </div>
+        <video id="video" class="hidden" playsinline autoplay muted>
+            <source src="video.mp4" type="video/mp4">
+        </video>
+        <audio id="audio" class="hidden" src="audio.mp3"></audio>
     </div>
 
-    <!-- Video 4K toàn màn hình không chỉnh sửa -->
-    <video id="video" class="fullscreen-video" playsinline muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate">
-        <source src="video.mp4" type="video/mp4">
-    </video>
-
-    <!-- Âm thanh -->
-    <audio id="audio" src="audio.mp3"></audio>
-
     <script>
-        const targetDate = new Date("2025-02-23T04:45:00").getTime();
-
-        function redirectToYearbook() {
-            window.location.href = "yearbook.html";
-        }
-
+        const targetDate = new Date("2025-02-23T04:51:00").getTime();
+        
         function checkAndRedirect() {
             const now = Date.now();
             if (now >= targetDate) {
-                redirectToYearbook(); // Nếu đã hết countdown, chuyển trang ngay lập tức
+                window.location.href = "yearbook.html";
                 return true;
             }
             return false;
@@ -127,31 +124,21 @@
             const video = document.getElementById("video");
             const audio = document.getElementById("audio");
 
-            video.style.display = "block";  // Hiện video toàn màn hình
+            video.classList.remove("hidden");
             video.play().then(() => {
-                console.log("Video đang phát...");
-                video.muted = false;
-
-                // Sau 2 giây, bật âm thanh
                 setTimeout(() => {
-                    audio.volume = 1.0;
                     audio.play().catch(err => console.log("Lỗi phát audio:", err));
                 }, 2000);
             }).catch(err => console.log("Lỗi phát video:", err));
 
-            // Khi video kết thúc, chuyển hướng
             video.onended = () => {
-                console.log("Video kết thúc, chuyển hướng...");
-                redirectToYearbook();
+                window.location.href = "yearbook.html";
             };
-
-            // Chặn tua, pause và chỉnh sửa video
-            video.addEventListener('contextmenu', (event) => event.preventDefault());
-            video.addEventListener('play', () => video.controls = false);
-            video.addEventListener('pause', () => video.play());
         }
 
         function updateCountdown() {
+            if (checkAndRedirect()) return;
+
             const now = Date.now();
             const distance = targetDate - now;
 

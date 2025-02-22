@@ -28,13 +28,6 @@
             left: 50%;
             transform: translateX(-50%);
         }
-        .logotrang {
-            width: 100px;
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-        }
         .content {
             display: flex;
             flex-direction: column;
@@ -111,7 +104,6 @@
 </head>
 <body>
     <img src="logo.png" alt="Logo" class="logo">
-    <img src="logotrang.png" alt="Logo Trang" class="logotrang" id="logotrang">
     <div class="content" id="content">
         <h1 id="title">Coming soon</h1>
         <div class="countdown-container" id="countdown">
@@ -131,7 +123,7 @@
     <audio id="audio" src="audio.mp3"></audio>
 
     <script>
-        const targetDate = new Date("2025-02-23T05:08:00").getTime();
+        const targetDate = new Date("2025-02-23T05:12:00").getTime();
 
         function redirectToYearbook() {
             window.location.href = "yearbook.html";
@@ -152,26 +144,28 @@
 
             const video = document.getElementById("video");
             const audio = document.getElementById("audio");
-            const logotrang = document.getElementById("logotrang");
+            const logo = document.querySelector(".logo");
 
             video.style.display = "block";
             video.play().then(() => {
                 console.log("Video đang phát...");
                 video.muted = false;
 
-                // Nếu là điện thoại, xóa logotrang.png
+                // Nếu là điện thoại, ẩn logo
                 if (window.innerWidth < 768) {
-                    logotrang.classList.add("hidden");
+                    logo.style.display = "none";
                     screen.orientation.lock("landscape").catch(err => console.log("Không thể xoay ngang:", err));
                 }
 
-                // Bật nhạc sau 2 giây trên cả điện thoại & máy tính
+                // Chờ người dùng chạm vào màn hình để bật âm thanh trên điện thoại
+                document.body.addEventListener("touchend", () => {
+                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
+                }, { once: true });
+
+                // Tự động bật âm thanh sau 2 giây trên máy tính
                 setTimeout(() => {
                     audio.volume = 1.0;
-                    audio.play().catch(err => {
-                        console.log("Lỗi phát audio:", err);
-                        alert("Nhấn vào màn hình để phát nhạc!");
-                    });
+                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
                 }, 2000);
             }).catch(err => console.log("Lỗi phát video:", err));
 

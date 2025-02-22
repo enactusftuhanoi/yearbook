@@ -97,7 +97,7 @@
 
     <script>
         function checkAndRedirect() {
-            const targetDate = new Date("2025-02-22T23:50:00").getTime();
+            const targetDate = new Date("2025-02-23T00:00:00").getTime();
             const now = Date.now();
 
             if (now >= targetDate) {
@@ -111,7 +111,7 @@
         function updateCountdown() {
             if (checkAndRedirect()) return; // Kiểm tra trước khi cập nhật đếm ngược
 
-            const targetDate = new Date("2025-02-22T23:57:00").getTime();
+            const targetDate = new Date("2025-02-23T00:00:00").getTime();
             const now = Date.now();
             const distance = targetDate - now;
 

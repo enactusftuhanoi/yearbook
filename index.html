@@ -44,19 +44,20 @@
         }
 
         .video-container {
-            display: none; /* Ẩn video ban đầu */
+            display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100vw;
             height: 100vh;
             background: black;
+            overflow: hidden;
         }
 
         video {
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Video full màn hình */
+            object-fit: cover;
             position: absolute;
             top: 0;
             left: 0;
@@ -131,17 +132,18 @@
 
     <!-- Video -->
     <div class="video-container" id="video-section">
-        <video id="intro-video" muted autoplay playsinline>
+        <video id="intro-video" playsinline>
             <source src="video.mp4" type="video/mp4">
             Trình duyệt của bạn không hỗ trợ video.
         </video>
     </div>
 
     <script>
-        const targetDate = new Date("2025-02-23T02:33:00").getTime();
-        
+        const targetDate = new Date("2025-02-23T02:43:00").getTime();
+        const video = document.getElementById("intro-video");
+
         function redirectToYearbook() {
-            document.body.classList.add("fade-out"); // Thêm hiệu ứng fade-out
+            document.body.classList.add("fade-out");
             setTimeout(() => {
                 window.location.href = "yearbook.html";
             }, 1000);
@@ -152,7 +154,7 @@
             const distance = targetDate - now;
 
             if (distance <= 0) {
-                localStorage.setItem("countdownFinished", "true"); // Đánh dấu countdown đã kết thúc
+                localStorage.setItem("countdownFinished", "true");
                 startVideo();
                 return;
             }
@@ -164,26 +166,30 @@
         }
 
         function startVideo() {
-            document.getElementById("countdown-section").style.display = "none"; // Ẩn countdown
-            document.getElementById("video-section").style.display = "block"; // Hiện video
+            document.getElementById("countdown-section").style.display = "none";
+            document.getElementById("video-section").style.display = "block";
 
-            const video = document.getElementById("intro-video");
-            video.currentTime = 0; // Đảm bảo video chạy từ đầu
-            video.play().catch(error => console.log("Lỗi phát video:", error));
+            video.muted = false; // Bật âm thanh
+            video.currentTime = 0;
+            video.play().catch(() => {
+                video.muted = true;
+                video.play();
+            });
 
-            // Khi video kết thúc, fade out rồi chuyển trang
-            video.onended = function () {
+            video.onended = redirectToYearbook;
+        }
+
+        // Kiểm tra nếu countdown đã kết thúc trước đó, chuyển hướng luôn đến yearbook.html
+        function checkCountdownStatus() {
+            if (localStorage.getItem("countdownFinished") === "true" || Date.now() >= targetDate) {
                 redirectToYearbook();
-            };
+            } else {
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
+            }
         }
 
-        // Kiểm tra trạng thái countdown
-        if (localStorage.getItem("countdownFinished") === "true" || Date.now() >= targetDate) {
-            startVideo(); // Nếu countdown đã kết thúc, chạy video ngay lập tức
-        } else {
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
-        }
+        checkCountdownStatus();
     </script>
 </body>
 </html>

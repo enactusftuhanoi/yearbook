@@ -99,7 +99,7 @@
    
     <script>
         function updateCountdown() {
-            const targetDate = new Date("February 22, 2025 23:25:00").getTime();
+            const targetDate = new Date("February 22, 2025 23:30:00").getTime();
             const now = new Date().getTime();
             const distance = targetDate - now;
 
@@ -122,7 +122,7 @@
 
         // Dừng lại khi countdown kết thúc
         function clearIntervalIfComplete() {
-            const targetDate = new Date("February 22, 2025 05:32:00").getTime();
+            const targetDate = new Date("February 22, 2025 23:30:00").getTime();
             const now = new Date().getTime();
             const distance = targetDate - now;
             if (distance <= 0) {

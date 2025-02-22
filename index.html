@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Coming soon</title>
+    <title>Coming Soon</title>
     <link rel="icon" href="logotab.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
@@ -96,22 +96,24 @@
     </div>
 
     <script>
+        function checkAndRedirect() {
+            const targetDate = new Date("2025-02-22T23:50:00").getTime();
+            const now = Date.now();
+
+            if (now >= targetDate) {
+                // Nếu đã hết thời gian, chuyển hướng ngay lập tức
+                window.location.href = "yearbook.html";
+                return true;
+            }
+            return false;
+        }
+
         function updateCountdown() {
-            const targetDate = new Date("2025-02-22T23:50:00").getTime(); // Định dạng chính xác
+            if (checkAndRedirect()) return; // Kiểm tra trước khi cập nhật đếm ngược
+
+            const targetDate = new Date("2025-02-22T23:57:00").getTime();
             const now = Date.now();
             const distance = targetDate - now;
-
-            if (distance <= 0) {
-                clearInterval(countdownInterval);  // Dừng đếm ngược khi hết thời gian
-                document.getElementById("days").textContent = "0";
-                document.getElementById("hours").textContent = "0";
-                document.getElementById("minutes").textContent = "0";
-                document.getElementById("seconds").textContent = "0";
-
-                // Chuyển hướng sang yearbook.html
-                window.location.href = "yearbook.html";
-                return;
-            }
 
             document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
             document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
@@ -119,8 +121,11 @@
             document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
         }
 
-        updateCountdown(); // Cập nhật ngay lập tức
-        const countdownInterval = setInterval(updateCountdown, 1000); // Cập nhật mỗi giây
+        // Kiểm tra ngay khi trang tải lên
+        if (!checkAndRedirect()) {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
     </script>
 </body>
 </html>

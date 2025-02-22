@@ -107,7 +107,7 @@
     </div>
 
     <script>
-        const targetDate = new Date("2025-02-23T04:17:30").getTime();
+        const targetDate = new Date("2025-02-23T04:19:30").getTime();
         
         function checkAndRedirect() {
             const now = Date.now();
@@ -119,25 +119,33 @@
         }
 
         function startVideoAndAudio() {
-            document.getElementById("countdown").classList.add("hidden");
-            document.getElementById("title").classList.add("hidden");
+    document.getElementById("countdown").classList.add("hidden");
+    document.getElementById("title").classList.add("hidden");
 
-            const video = document.getElementById("video");
-            const audio = document.getElementById("audio");
+    const video = document.getElementById("video");
+    const audio = document.getElementById("audio");
 
-            video.classList.remove("hidden");
-            video.play().then(() => {
-                console.log("Video đang phát...");
-                setTimeout(() => {
-                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
-                }, 2000);
-            }).catch(err => console.log("Lỗi phát video:", err));
+    video.classList.remove("hidden");
 
-            video.onended = () => {
-                console.log("Video kết thúc, chuyển hướng...");
-                window.location.href = "yearbook.html";
-            };
-        }
+    video.play().then(() => {
+        console.log("Video đang phát...");
+        setTimeout(() => {
+            audio.play().catch(err => console.log("Lỗi phát audio:", err));
+        }, 2000);
+    }).catch(err => {
+        console.log("Lỗi phát video:", err);
+        // Thử lại khi có tương tác từ người dùng
+        document.addEventListener("click", function() {
+            video.play();
+            audio.play();
+        }, { once: true });
+    });
+
+    video.onended = () => {
+        console.log("Video kết thúc, chuyển hướng...");
+        window.location.href = "yearbook.html";
+    };
+}
 
         function updateCountdown() {
             if (checkAndRedirect()) return;

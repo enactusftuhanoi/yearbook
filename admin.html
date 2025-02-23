@@ -3,166 +3,115 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
+            background-color: #f8f9fa;
         }
-        #login-form, #admin-panel {
-            max-width: 600px;
-            margin: 50px auto;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        .sidebar {
+            width: 250px;
+            height: 100vh;
+            position: fixed;
+            background: #343a40;
+            padding-top: 20px;
+            color: white;
         }
-        h2, h1 {
-            text-align: center;
-        }
-        button {
+        .sidebar a {
+            color: white;
+            padding: 10px;
             display: block;
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            text-decoration: none;
         }
-        button:hover {
-            background: #0056b3;
+        .sidebar a:hover {
+            background: #495057;
         }
-        input, textarea {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
+        .content {
+            margin-left: 260px;
+            padding: 20px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        th {
-            background: #007bff;
-            color: white;
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
-    <div id="login-form">
-        <h2>Đăng nhập</h2>
-        <div id="g_id_onload"
-             data-client_id="YOUR_GOOGLE_CLIENT_ID"
-             data-callback="handleCredentialResponse"
-             data-auto_prompt="false">
+    <div id="login-form" class="container mt-5">
+        <h2 class="text-center">Đăng nhập</h2>
+        <div class="mb-3">
+            <label class="form-label">Email:</label>
+            <input type="email" class="form-control" id="login-email" placeholder="Nhập email...">
         </div>
-        <div class="g_id_signin" data-type="standard"></div>
-        <p id="login-error" style="color: red; display: none;">Bạn không có quyền truy cập</p>
+        <div class="mb-3">
+            <label class="form-label">Mật khẩu:</label>
+            <input type="password" class="form-control" id="login-password" placeholder="Nhập mật khẩu...">
+        </div>
+        <button class="btn btn-primary w-100" onclick="login()">Đăng nhập</button>
     </div>
     
-    <div id="admin-panel" style="display: none;">
-        <header>
-            <h1>Admin Dashboard</h1>
-            <button onclick="logout()">Đăng xuất</button>
-        </header>
-        <main>
-            <section id="member-management">
-                <h2>Quản lý thành viên</h2>
-                <button onclick="showAddMemberForm()">Thêm thành viên</button>
-                <button onclick="exportToExcel()">Xuất Excel</button>
-                <input type="text" id="search" placeholder="Tìm kiếm thành viên..." onkeyup="searchMember()">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tên</th>
-                            <th>Email</th>
-                            <th>Số điện thoại</th>
-                            <th>Địa chỉ</th>
-                            <th>Vai trò</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody id="member-list"></tbody>
-                </table>
-            </section>
-            
-            <section id="index-management">
-                <h2>Quản lý trang Index</h2>
-                <label for="index-title">Tiêu đề:</label>
-                <input type="text" id="index-title" placeholder="Nhập tiêu đề trang...">
-                <label for="index-content">Nội dung:</label>
-                <textarea id="index-content" placeholder="Nhập nội dung trang..."></textarea>
-                <label for="index-image">Hình ảnh:</label>
-                <input type="file" id="index-image" accept="image/*">
-                <label for="index-time">Thời gian hiển thị:</label>
-                <input type="datetime-local" id="index-time">
-                <button onclick="previewIndex()">Xem trước</button>
-                <button onclick="saveIndex()">Lưu</button>
-                <div id="index-preview" style="display: none;">
-                    <h3>Xem trước trang Index</h3>
-                    <h2 id="preview-title"></h2>
-                    <p id="preview-content"></p>
-                    <p id="preview-time"></p>
-                    <img id="preview-image" src="" alt="Xem trước hình ảnh" style="max-width: 100%; display: none;">
-                </div>
-            </section>
-        </main>
+    <div id="admin-panel" class="hidden">
+        <div class="sidebar">
+            <h2 class="text-center">Admin Panel</h2>
+            <a href="#">Dashboard</a>
+            <a href="#">Quản lý thành viên</a>
+            <a href="#">Quản lý trang Index</a>
+            <a href="#" onclick="logout()">Đăng xuất</a>
+        </div>
+        <div class="content">
+            <h1>Quản lý thành viên</h1>
+            <button class="btn btn-primary" onclick="showAddMemberForm()">Thêm thành viên</button>
+            <button class="btn btn-success" onclick="exportToExcel()">Xuất Excel</button>
+            <input type="text" id="search" class="form-control mt-2" placeholder="Tìm kiếm thành viên..." onkeyup="searchMember()">
+            <table class="table table-striped mt-3">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Tên</th>
+                        <th>Email</th>
+                        <th>Số điện thoại</th>
+                        <th>Địa chỉ</th>
+                        <th>Vai trò</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody id="member-list"></tbody>
+            </table>
+        </div>
     </div>
     
     <script>
-        let allowedEmails = ["admin@example.com", "moderator@example.com", "tuhm2567@gmail.com"];
-
-        function handleCredentialResponse(response) {
-            const data = parseJwt(response.credential);
-            if (allowedEmails.includes(data.email)) {
-                document.getElementById("login-form").style.display = "none";
-                document.getElementById("admin-panel").style.display = "block";
+        let users = [
+            { email: "admin@example.com", password: "admin123", role: "admin" },
+            { email: "user@example.com", password: "user123", role: "user" }
+        ];
+        
+        function login() {
+            const email = document.getElementById("login-email").value;
+            const password = document.getElementById("login-password").value;
+            const user = users.find(u => u.email === email && u.password === password);
+            
+            if (user) {
+                localStorage.setItem("loggedInUser", JSON.stringify(user));
+                document.getElementById("login-form").classList.add("hidden");
+                document.getElementById("admin-panel").classList.remove("hidden");
             } else {
-                document.getElementById("login-error").style.display = "block";
+                alert("Sai email hoặc mật khẩu!");
             }
         }
         
-        function parseJwt(token) {
-            let base64Url = token.split('.')[1];
-            let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            let jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-                return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            return JSON.parse(jsonPayload);
+        function logout() {
+            localStorage.removeItem("loggedInUser");
+            document.getElementById("login-form").classList.remove("hidden");
+            document.getElementById("admin-panel").classList.add("hidden");
         }
         
-        function previewIndex() {
-            document.getElementById("preview-title").textContent = document.getElementById("index-title").value;
-            document.getElementById("preview-content").textContent = document.getElementById("index-content").value;
-            document.getElementById("preview-time").textContent = "Thời gian: " + document.getElementById("index-time").value;
-            const file = document.getElementById("index-image").files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    document.getElementById("preview-image").src = e.target.result;
-                    document.getElementById("preview-image").style.display = "block";
-                }
-                reader.readAsDataURL(file);
+        window.onload = function() {
+            const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+            if (loggedInUser) {
+                document.getElementById("login-form").classList.add("hidden");
+                document.getElementById("admin-panel").classList.remove("hidden");
             }
-            document.getElementById("index-preview").style.display = "block";
-        }
-        
-        function saveIndex() {
-            alert("Lưu thay đổi thành công!");
         }
     </script>
 </body>

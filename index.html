@@ -140,7 +140,26 @@
     const db = getDatabase(app);
     let targetDate = null;
 
- function redirectToYearbook() {
+// Lấy thời gian từ Firebase
+const targetTimeRef = ref(db, "countdown/targetTime"); 
+
+onValue(targetTimeRef, (snapshot) => {
+    const data = snapshot.val();
+    if (data) {
+        targetDate = new Date(data).getTime(); // Chuyển timestamp từ Firebase thành milliseconds
+        if (data) {
+    targetDate = new Date(data).getTime(); // Chuyển timestamp từ Firebase thành milliseconds
+
+    // Kiểm tra nếu đã đến thời điểm chạy video
+    if (!checkAndRedirect()) {
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    }
+}
+
+});
+
+function checkAndRedirect() {
             window.location.href = "yearbook.html";
         }
 

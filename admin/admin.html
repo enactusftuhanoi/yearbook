@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Set Countdown</title>
+    <title>Admin - Cập nhật Countdown</title>
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -20,11 +20,25 @@
             font-size: 1.2rem;
             padding: 10px;
             margin: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #2c3e50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #1a252f;
+        }
+        #status {
+            font-size: 1rem;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <h1>Admin - Cập nhật thời gian</h1>
+    <h1>Admin - Cập nhật Thời Gian Countdown</h1>
     <input type="datetime-local" id="datetime">
     <button onclick="updateFirebase()">Cập nhật</button>
     <p id="status"></p>
@@ -34,29 +48,36 @@
         import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
         const firebaseConfig = {
-            apiKey: "",
+            apiKey: "", // Điền API Key của bạn vào đây
             authDomain: "admin-time-d86cb.firebaseapp.com",
             databaseURL: "https://admin-time-d86cb-default-rtdb.firebaseio.com/",
             projectId: "admin-time-d86cb",
             storageBucket: "admin-time-d86cb.appspot.com",
             messagingSenderId: "453665038439",
-            appId: ""
+            appId: "" // Điền App ID của bạn vào đây
         };
 
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
 
         window.updateFirebase = function () {
-            const datetime = document.getElementById("datetime").value;
-            if (!datetime) {
-                document.getElementById("status").textContent = "❌ Vui lòng chọn thời gian!";
+            const datetimeInput = document.getElementById("datetime").value;
+            const statusElement = document.getElementById("status");
+
+            if (!datetimeInput) {
+                statusElement.textContent = "❌ Vui lòng chọn thời gian!";
+                statusElement.style.color = "red";
                 return;
             }
 
-            set(ref(db, "targetDate"), new Date(datetime).toISOString()).then(() => {
-                document.getElementById("status").textContent = "✅ Cập nhật thành công!";
+            const timestamp = new Date(datetimeInput).getTime();
+
+            set(ref(db, "targetDate"), timestamp).then(() => {
+                statusElement.textContent = "✅ Cập nhật thành công!";
+                statusElement.style.color = "green";
             }).catch(err => {
-                document.getElementById("status").textContent = "❌ Lỗi: " + err.message;
+                statusElement.textContent = "❌ Lỗi: " + err.message;
+                statusElement.style.color = "red";
             });
         };
     </script>

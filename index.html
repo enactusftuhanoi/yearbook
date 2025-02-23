@@ -170,7 +170,7 @@
             }).catch(err => console.log("Lỗi phát video:", err));
 
             video.onended = () => {
-                    console.log("Video kết thúc, chờ 1 giây trước khi chuyển hướng...");
+                    console.log("Video kết thúc, chờ 0.8s giây trước khi chuyển hướng...");
                     setTimeout(() => {
                     redirectToYearbook();
                 }, 800);

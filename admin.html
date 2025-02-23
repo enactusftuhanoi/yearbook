@@ -6,6 +6,8 @@
     <title>Trang Admin</title>
     <link rel="icon" href="logotab.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
@@ -35,6 +37,15 @@
         h1 {
             font-size: 1.8rem;
             margin-bottom: 15px;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            text-align: center;
         }
         button {
             background: #3498db;
@@ -72,6 +83,8 @@
     <img src="logo.png" alt="Logo" class="logo">
     <div class="container">
         <h1>Chỉnh sửa trang</h1>
+        <label for="datetime">Thời gian sự kiện:</label>
+        <input type="datetime-local" id="datetime">
         <button onclick="updateContent()">Lưu thay đổi</button>
     </div>
 
@@ -81,10 +94,34 @@
     </div>
 
     <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyB-LOR6Vk_Qog4mMtxmnGKtW9p_Pp6cXGI",
+            authDomain: "admin-time-d86cb.firebaseapp.com",
+            databaseURL: "https://admin-time-d86cb-default-rtdb.firebaseio.com/",
+            projectId: "admin-time-d86cb",
+            storageBucket: "admin-time-d86cb.appspot.com",
+            messagingSenderId: "453665038439",
+            appId: "1:453665038439:web:1234567890abcdef"
+        };
+        
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        
         function updateContent() {
-            setTimeout(() => {
+            const datetimeValue = document.getElementById("datetime").value;
+            if (!datetimeValue) {
+                alert("Vui lòng chọn thời gian trước khi lưu!");
+                return;
+            }
+            
+            db.ref("events/mainEvent").set({ eventTime: datetimeValue })
+            .then(() => {
                 document.getElementById("confirmation").style.display = "block";
-            }, 1000);
+            })
+            .catch(error => {
+                console.error("Lỗi cập nhật: ", error);
+                alert("Có lỗi xảy ra khi cập nhật!");
+            });
         }
 
         function redirectToPage() {

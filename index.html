@@ -49,6 +49,21 @@
             font-size: 1rem;
             color: #7f8c8d;
         }
+        #media-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            justify-content: center;
+            align-items: center;
+        }
+        video {
+            width: 80%;
+            max-width: 800px;
+        }
     </style>
 </head>
 <body>
@@ -59,6 +74,17 @@
         <div class="countdown-box"><span id="hours">0</span><label>Hours</label></div>
         <div class="countdown-box"><span id="minutes">0</span><label>Minutes</label></div>
         <div class="countdown-box"><span id="seconds">0</span><label>Seconds</label></div>
+    </div>
+
+    <div id="media-container">
+        <video id="video" controls>
+            <source src="video.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+        <audio id="audio">
+            <source src="audio.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
     </div>
 
     <script type="module">
@@ -79,6 +105,7 @@
         const db = getDatabase(app);
 
         let targetDate = null;
+        let playedOnce = false;
 
         onValue(ref(db, "targetDate"), (snapshot) => {
             if (snapshot.exists()) {
@@ -94,10 +121,18 @@
             const now = Date.now();
             const distance = targetDate - now;
 
-            document.getElementById("days").textContent = Math.max(0, Math.floor(distance / (1000 * 60 * 60 * 24)));
-            document.getElementById("hours").textContent = Math.max(0, Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
-            document.getElementById("minutes").textContent = Math.max(0, Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
-            document.getElementById("seconds").textContent = Math.max(0, Math.floor((distance % (1000 * 60)) / 1000));
+            if (distance <= 0 && !playedOnce) {
+                playedOnce = true;
+                document.getElementById("countdown").style.display = "none";
+                document.getElementById("media-container").style.display = "flex";
+                document.getElementById("video").play();
+                document.getElementById("audio").play();
+            } else {
+                document.getElementById("days").textContent = Math.max(0, Math.floor(distance / (1000 * 60 * 60 * 24)));
+                document.getElementById("hours").textContent = Math.max(0, Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+                document.getElementById("minutes").textContent = Math.max(0, Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
+                document.getElementById("seconds").textContent = Math.max(0, Math.floor((distance % (1000 * 60)) / 1000));
+            }
         }
     </script>
 </body>

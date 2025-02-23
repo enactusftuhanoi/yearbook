@@ -3,41 +3,169 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Chỉnh sửa Countdown</title>
+    <title>Admin - Cập nhật Countdown</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f4f8;
+            color: #2c3e50;
+            flex-direction: column;
             text-align: center;
             padding: 20px;
+            margin: 0;
         }
-        input, button {
-            font-size: 18px;
-            padding: 10px;
+        .logo {
+            width: 150px;
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .content {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+        input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1rem;
+            border: 2px solid #2c3e50;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            outline: none;
+        }
+        .time-box {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        button {
+            width: 100%;
+            background: #ffbe00;
+            border: none;
+            color: #2c3e50;
+            font-size: 1rem;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #e0a800;
+        }
+        #status {
             margin-top: 10px;
+            font-size: 1rem;
+            color: #27ae60;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <h2>Chỉnh sửa thời gian đếm ngược</h2>
-    <input type="datetime-local" id="dateInput">
-    <button onclick="saveDate()">Lưu</button>
+    <img src="logo.png" alt="Logo" class="logo">
+    <div class="content">
+        <h1>Cập nhật Countdown</h1>
 
-    <script>
-        function saveDate() {
-            const inputDate = document.getElementById("dateInput").value;
-            if (!inputDate) {
-                alert("Vui lòng chọn ngày giờ hợp lệ!");
+        <!-- Hiển thị thời gian hiện tại của index -->
+        <div class="time-box">
+            <p>🕒 Thời gian đang hiển thị trên Index:</p>
+            <p id="currentTime">Đang tải...</p>
+        </div>
+
+        <input type="datetime-local" id="dateInput">
+        <button onclick="saveDate()">Lưu</button>
+        <p id="status"></p>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, set, get, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+        // Cấu hình Firebase
+        const firebaseConfig = {
+            apiKey: "",
+            authDomain: "admin-time-d86cb.firebaseapp.com",
+            databaseURL: "https://admin-time-d86cb-default-rtdb.firebaseio.com/",
+            projectId: "admin-time-d86cb",
+            storageBucket: "admin-time-d86cb.appspot.com",
+            messagingSenderId: "453665038439",
+            appId: ""
+        };
+
+        // Khởi tạo Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Cập nhật thời gian hiển thị trên Index
+        function updateCurrentTimeDisplay(targetTime) {
+            const timeBox = document.getElementById("currentTime");
+            if (!targetTime) {
+                timeBox.innerText = "Chưa có dữ liệu.";
                 return;
             }
-            localStorage.setItem("targetDate", new Date(inputDate).toISOString());
-            alert("Thời gian đã được cập nhật!");
+            const date = new Date(targetTime);
+            const formattedDate = date.toLocaleString("vi-VN", { timeZone: "Asia/Ho_Chi_Minh" });
+            timeBox.innerText = formattedDate;
         }
 
-        // Hiển thị ngày đã lưu (nếu có)
-        const savedDate = localStorage.getItem("targetDate");
-        if (savedDate) {
-            document.getElementById("dateInput").value = savedDate.slice(0, 16);
+        // Lấy thời gian hiện tại của index từ Firebase
+        onValue(ref(db, "targetDate"), (snapshot) => {
+            if (snapshot.exists()) {
+                const targetTime = snapshot.val();
+                updateCurrentTimeDisplay(targetTime);
+            } else {
+                document.getElementById("currentTime").innerText = "Chưa có dữ liệu.";
+            }
+        });
+
+        // Hàm lưu targetDate lên Firebase
+        window.saveDate = function () {
+            const inputDate = document.getElementById("dateInput").value;
+            if (!inputDate) {
+                alert("Vui lòng chọn ngày hợp lệ!");
+                return;
+            }
+            const isoDate = new Date(inputDate).toISOString();
+            set(ref(db, "targetDate"), isoDate)
+                .then(() => {
+                    document.getElementById("status").innerText = "🎉 Đã lưu thành công!";
+                    setTimeout(() => document.getElementById("status").innerText = "", 3000);
+                })
+                .catch(error => console.log("Lỗi:", error));
+        };
+
+        // Tải ngày hiện tại khi mở trang
+        async function loadCurrentDate() {
+            const snapshot = await get(ref(db, "targetDate"));
+            if (snapshot.exists()) {
+                document.getElementById("dateInput").value = snapshot.val().slice(0, 16);
+            }
         }
+
+        loadCurrentDate();
     </script>
 </body>
 </html>

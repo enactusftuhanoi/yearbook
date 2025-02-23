@@ -138,89 +138,83 @@
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-
     let targetDate = null;
-    let countdownStarted = false;  // Đảm bảo setInterval chỉ chạy một lần
 
-    // Lắng nghe Firebase để lấy targetDate
-    onValue(ref(db, "targetDate"), (snapshot) => {
-        if (snapshot.exists()) {
-            targetDate = parseInt(snapshot.val(), 10);
-            console.log("Thời gian mục tiêu:", targetDate);
-
-            if (!countdownStarted) {
-                countdownStarted = true;
-                setInterval(updateCountdown, 1000);
-            }
-
-            updateCountdown(); // Cập nhật ngay khi có dữ liệu mới
-        }
-    });
-
-    function updateCountdown() {
-        if (!targetDate) return;  // Đợi Firebase cập nhật
-
-        const now = Date.now();
-        const distance = targetDate - now;
-
-        if (distance <= 0) {
-            startVideoAndAudio();
-            return;
+ function redirectToYearbook() {
+            window.location.href = "yearbook.html";
         }
 
-        document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
-        document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
-    }
-
-    function startVideoAndAudio() {
-        document.getElementById("countdown").classList.add("hidden");
-        document.getElementById("title").classList.add("hidden");
-
-        const video = document.getElementById("video");
-        const audio = document.getElementById("audio");
-        const logo = document.querySelector(".logo");
-
-        video.style.display = "block";
-        video.play().then(() => {
-            console.log("Video đang phát...");
-            video.muted = false;
-
-            // Nếu là điện thoại, ẩn logo
-            if (window.innerWidth < 768) {
-                logo.style.display = "none";
-                screen.orientation.lock("landscape").catch(err => console.log("Không thể xoay ngang:", err));
-            }
-
-            // Chờ người dùng chạm vào màn hình để bật âm thanh trên điện thoại
-            document.body.addEventListener("touchend", () => {
-                audio.play().catch(err => console.log("Lỗi phát audio:", err));
-            }, { once: true });
-
-            // Tự động bật âm thanh sau 0.3 giây trên máy tính
-            setTimeout(() => {
-                audio.volume = 1.0;
-                audio.play().catch(err => console.log("Lỗi phát audio:", err));
-            }, 300);
-        }).catch(err => console.log("Lỗi phát video:", err));
-
-        video.onended = () => {
-            console.log("Video kết thúc, chờ 1 giây trước khi chuyển hướng...");
-            setTimeout(() => {
+        function checkAndRedirect() {
+            const now = Date.now();
+            if (now >= targetDate) {
                 redirectToYearbook();
-            }, 800);
-        };
+                return true;
+            }
+            return false;
+        }
 
-        video.addEventListener('contextmenu', (event) => event.preventDefault());
-        video.addEventListener('play', () => video.controls = false);
-        video.addEventListener('pause', () => video.play());
-    }
+        function startVideoAndAudio() {
+            document.getElementById("countdown").classList.add("hidden");
+            document.getElementById("title").classList.add("hidden");
 
-    function redirectToYearbook() {
-        window.location.href = "yearbook.html";
-    }
-</script>
+            const video = document.getElementById("video");
+            const audio = document.getElementById("audio");
+            const logo = document.querySelector(".logo");
 
+            video.style.display = "block";
+            video.play().then(() => {
+                console.log("Video đang phát...");
+                video.muted = false;
+
+                // Nếu là điện thoại, ẩn logo
+                if (window.innerWidth < 768) {
+                    logo.style.display = "none";
+                    screen.orientation.lock("landscape").catch(err => console.log("Không thể xoay ngang:", err));
+                }
+
+                // Chờ người dùng chạm vào màn hình để bật âm thanh trên điện thoại
+                document.body.addEventListener("touchend", () => {
+                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
+                }, { once: true });
+
+                // Tự động bật âm thanh sau 0.3 giây trên máy tính
+                setTimeout(() => {
+                    audio.volume = 1.0;
+                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
+                }, 300);
+            }).catch(err => console.log("Lỗi phát video:", err));
+
+            video.onended = () => {
+                    console.log("Video kết thúc, chờ 1 giây trước khi chuyển hướng...");
+                    setTimeout(() => {
+                    redirectToYearbook();
+                }, 800);
+            };
+
+            video.addEventListener('contextmenu', (event) => event.preventDefault());
+            video.addEventListener('play', () => video.controls = false);
+            video.addEventListener('pause', () => video.play());
+        }
+
+        function updateCountdown() {
+            const now = Date.now();
+            const distance = targetDate - now;
+
+            if (distance <= 0) {
+                startVideoAndAudio();
+                return;
+            }
+
+            document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
+            document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
+        }
+
+        if (!checkAndRedirect()) {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+    </script>
 </body>
 </html>

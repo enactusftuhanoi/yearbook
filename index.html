@@ -162,11 +162,11 @@
                     audio.play().catch(err => console.log("Lỗi phát audio:", err));
                 }, { once: true });
 
-                // Tự động bật âm thanh sau 2 giây trên máy tính
+                // Tự động bật âm thanh sau 0.8 giây trên máy tính
                 setTimeout(() => {
                     audio.volume = 1.0;
                     audio.play().catch(err => console.log("Lỗi phát audio:", err));
-                }, 1000);
+                }, 800);
             }).catch(err => console.log("Lỗi phát video:", err));
 
             video.onended = () => {
@@ -175,7 +175,7 @@
             };
 
             video.addEventListener('contextmenu', (event) => event.preventDefault());
-            video.addEventListener('play', () => video.controls = true);
+            video.addEventListener('play', () => video.controls = false);
             video.addEventListener('pause', () => video.play());
         }
 

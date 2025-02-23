@@ -123,44 +123,34 @@
     <audio id="audio" src="audio.mp3"></audio>
 
     <script>
-        <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-        const firebaseConfig = {
-            apiKey: "",
-            authDomain: "admin-time-d86cb.firebaseapp.com",
-            databaseURL: "https://admin-time-d86cb-default-rtdb.firebaseio.com/",
-            projectId: "admin-time-d86cb",
-            storageBucket: "admin-time-d86cb.appspot.com",
-            messagingSenderId: "453665038439",
-            appId: ""
-        };
+const firebaseConfig = {
+    apiKey: "",
+    authDomain: "admin-time-d86cb.firebaseapp.com",
+    databaseURL: "https://admin-time-d86cb-default-rtdb.firebaseio.com/",
+    projectId: "admin-time-d86cb",
+    storageBucket: "admin-time-d86cb.appspot.com",
+    messagingSenderId: "453665038439",
+    appId: ""
+};
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
 
-        let targetDate = null;
+let targetDate = null;
 
-        onValue(ref(db, "targetDate"), (snapshot) => {
-            if (snapshot.exists()) {
-                targetDate = new Date(snapshot.val()).getTime();
-                updateCountdown();
-                setInterval(updateCountdown, 1000);
-            }
-        });
+// Lắng nghe Firebase để lấy targetDate
+onValue(ref(db, "targetDate"), (snapshot) => {
+    if (snapshot.exists()) {
+        targetDate = parseInt(snapshot.val(), 10);
+        updateCountdown(); // Cập nhật ngay khi có dữ liệu
+    }
+});
 
-        function updateCountdown() {
-            if (!targetDate) return;
-
-            const now = Date.now();
-            const distance = targetDate - now;
-
-            document.getElementById("days").textContent = Math.max(0, Math.floor(distance / (1000 * 60 * 60 * 24)));
-            document.getElementById("hours").textContent = Math.max(0, Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
-            document.getElementById("minutes").textContent = Math.max(0, Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
-            document.getElementById("seconds").textContent = Math.max(0, Math.floor((distance % (1000 * 60)) / 1000));
-        }
+// Chỉ chạy interval một lần
+setInterval(updateCountdown, 1000);
 
 
         function redirectToYearbook() {

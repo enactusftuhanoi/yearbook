@@ -4,22 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Chỉnh sửa thời gian</title>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-database.js"></script>
 </head>
 <body>
     <h2>Chỉnh sửa thời gian sự kiện</h2>
     <input type="datetime-local" id="eventTime">
     <button onclick="updateTime()">Lưu</button>
-    
+
     <script>
-        async function loadTime() {
-            let response = await fetch('data.json');
-            let data = await response.json();
-            document.getElementById('eventTime').value = data.eventTime;
+        // Cấu hình Firebase
+        const firebaseConfig = {
+            apiKey: "", // Không cần nếu không bật Authentication
+            authDomain: "admin-time-d86cb.firebaseapp.com",
+            databaseURL: "https://admin-time-d86cb-default-rtdb.firebaseio.com/",
+            projectId: "admin-time-d86cb",
+            storageBucket: "admin-time-d86cb.appspot.com",
+            messagingSenderId: "453665038439",
+            appId: "" // Không cần nếu không có
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Load thời gian hiện tại từ Firebase
+        function loadTime() {
+            db.ref("eventTime").on("value", (snapshot) => {
+                if (snapshot.exists()) {
+                    document.getElementById('eventTime').value = snapshot.val();
+                }
+            });
         }
 
+        // Cập nhật thời gian mới lên Firebase
         function updateTime() {
             let newTime = document.getElementById('eventTime').value;
-            alert("Bạn cần cập nhật thủ công file data.json trên GitHub:\n" + newTime);
+            db.ref("eventTime").set(newTime);
+            alert("Đã cập nhật thời gian!");
         }
 
         loadTime();

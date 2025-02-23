@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Chỉnh sửa thời gian</title>
+</head>
+<body>
+    <h2>Chỉnh sửa thời gian sự kiện</h2>
+    <input type="datetime-local" id="eventTime">
+    <button onclick="updateTime()">Lưu</button>
+    
+    <script>
+        async function loadTime() {
+            let response = await fetch('data.json');
+            let data = await response.json();
+            document.getElementById('eventTime').value = data.eventTime;
+        }
+
+        function updateTime() {
+            let newTime = document.getElementById('eventTime').value;
+            alert("Bạn cần cập nhật thủ công file data.json trên GitHub:\n" + newTime);
+        }
+
+        loadTime();
+    </script>
+</body>
+</html>

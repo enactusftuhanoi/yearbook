@@ -123,7 +123,7 @@
     <audio id="audio" src="audio.mp3"></audio>
 
     <script>
-        const targetDate = new Date("2025-02-23T07:19:00").getTime();
+        const targetDate = new Date("2025-02-23T07:24:00").getTime();
 
         function redirectToYearbook() {
             window.location.href = "yearbook.html";
@@ -170,8 +170,10 @@
             }).catch(err => console.log("Lỗi phát video:", err));
 
             video.onended = () => {
-                console.log("Video kết thúc, chuyển hướng...");
-                redirectToYearbook();
+                    console.log("Video kết thúc, chờ 1 giây trước khi chuyển hướng...");
+                    setTimeout(() => {
+                    redirectToYearbook();
+                }, 1000);
             };
 
             video.addEventListener('contextmenu', (event) => event.preventDefault());

@@ -18,7 +18,6 @@
             flex-direction: column;
             text-align: center;
             padding: 20px;
-            overflow: hidden;
             margin: 0;
         }
         .logo {
@@ -28,166 +27,82 @@
             left: 50%;
             transform: translateX(-50%);
         }
-        .content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex-grow: 1;
-            width: 100%;
-        }
-        h1 {
-            font-size: clamp(1.5rem, 3vw, 2.5rem);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
         .countdown-container {
             display: flex;
             justify-content: center;
-            align-items: center;
-            width: 100%;
-            max-width: 700px;
             gap: 20px;
         }
         .countdown-box {
             background: white;
-            padding: 25px;
-            border-radius: 15px;
+            padding: 20px;
+            border-radius: 10px;
             text-align: center;
-            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
-            min-width: 120px;
-            flex: 1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            min-width: 100px;
         }
         .countdown-box span {
             display: block;
-            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-size: 2rem;
             font-weight: bold;
         }
         .countdown-box label {
-            font-size: clamp(1rem, 2vw, 1.2rem);
+            font-size: 1rem;
             color: #7f8c8d;
         }
-        .hidden {
-            display: none;
-        }
-        .fullscreen-video {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            transform: translate(-50%, -50%);
-            display: none;
-            pointer-events: none;
-        }
-
-        /* Thiết lập cho điện thoại */
-        @media (max-width: 768px) {
-            .countdown-container {
-                flex-wrap: wrap;
-                gap: 10px;
-                max-width: 80%;
-            }
-            .countdown-box {
-                flex: 0 1 calc(50% - 10px);
-                min-width: 100px;
-                padding: 20px;
-            }
-            .fullscreen-video {
-                object-fit: contain;
-            }
+        .time-box {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2c3e50;
         }
     </style>
 </head>
 <body>
     <img src="logo.png" alt="Logo" class="logo">
-    <div class="content" id="content">
-        <h1 id="title">Coming soon</h1>
-        <div class="countdown-container" id="countdown">
-            <div class="countdown-box"><span id="days">0</span><label>Days</label></div>
-            <div class="countdown-box"><span id="hours">0</span><label>Hours</label></div>
-            <div class="countdown-box"><span id="minutes">0</span><label>Minutes</label></div>
-            <div class="countdown-box"><span id="seconds">0</span><label>Seconds</label></div>
-        </div>
+    <h1 id="title">Coming soon</h1>
+    <div class="countdown-container" id="countdown">
+        <div class="countdown-box"><span id="days">0</span><label>Days</label></div>
+        <div class="countdown-box"><span id="hours">0</span><label>Hours</label></div>
+        <div class="countdown-box"><span id="minutes">0</span><label>Minutes</label></div>
+        <div class="countdown-box"><span id="seconds">0</span><label>Seconds</label></div>
     </div>
+    <div class="time-box">Thời gian hiện tại: <span id="current-time"></span></div>
 
-    <!-- Video toàn màn hình -->
-    <video id="video" class="fullscreen-video" playsinline muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate">
-        <source src="video.mp4" type="video/mp4">
-    </video>
-
-    <!-- Âm thanh -->
-    <audio id="audio" src="audio.mp3"></audio>
-
-    <script>
+    <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
-import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
 
-        function redirectToYearbook() {
-            window.location.href = "yearbook.html";
-        }
+        const firebaseConfig = {
+            apiKey: "",
+            authDomain: "admin-time-d86cb.firebaseapp.com",
+            databaseURL: "https://admin-time-d86cb-default-rtdb.firebaseio.com/",
+            projectId: "admin-time-d86cb",
+            storageBucket: "admin-time-d86cb.appspot.com",
+            messagingSenderId: "453665038439",
+            appId: ""
+        };
 
-        function checkAndRedirect() {
-            const now = Date.now();
-            if (now >= targetDate) {
-                redirectToYearbook();
-                return true;
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        let targetDate = null;
+
+        onValue(ref(db, "targetDate"), (snapshot) => {
+            if (snapshot.exists()) {
+                targetDate = new Date(snapshot.val()).getTime();
+                updateCountdown();
+                setInterval(updateCountdown, 1000);
             }
-            return false;
-        }
-
-        function startVideoAndAudio() {
-            document.getElementById("countdown").classList.add("hidden");
-            document.getElementById("title").classList.add("hidden");
-
-            const video = document.getElementById("video");
-            const audio = document.getElementById("audio");
-            const logo = document.querySelector(".logo");
-
-            video.style.display = "block";
-            video.play().then(() => {
-                console.log("Video đang phát...");
-                video.muted = false;
-
-                // Nếu là điện thoại, ẩn logo
-                if (window.innerWidth < 768) {
-                    logo.style.display = "none";
-                    screen.orientation.lock("landscape").catch(err => console.log("Không thể xoay ngang:", err));
-                }
-
-                // Chờ người dùng chạm vào màn hình để bật âm thanh trên điện thoại
-                document.body.addEventListener("touchend", () => {
-                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
-                }, { once: true });
-
-                // Tự động bật âm thanh sau 0.3 giây trên máy tính
-                setTimeout(() => {
-                    audio.volume = 1.0;
-                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
-                }, 300);
-            }).catch(err => console.log("Lỗi phát video:", err));
-
-            video.onended = () => {
-                    console.log("Video kết thúc, chờ 0.8s giây trước khi chuyển hướng...");
-                    setTimeout(() => {
-                    redirectToYearbook();
-                }, 800);
-            };
-
-            video.addEventListener('contextmenu', (event) => event.preventDefault());
-            video.addEventListener('play', () => video.controls = false);
-            video.addEventListener('pause', () => video.play());
-        }
+        });
 
         function updateCountdown() {
+            if (!targetDate) return;
+
             const now = Date.now();
             const distance = targetDate - now;
 
             if (distance <= 0) {
-                startVideoAndAudio();
+                document.getElementById("title").textContent = "Event Started!";
                 return;
             }
 
@@ -195,14 +110,8 @@ import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/9.
             document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
-        }
-
-        if (!checkAndRedirect()) {
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
+            document.getElementById("current-time").textContent = new Date().toLocaleString("vi-VN");
         }
     </script>
 </body>
 </html>
-
-

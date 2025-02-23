@@ -123,7 +123,7 @@
     <audio id="audio" src="audio.mp3"></audio>
 
     <script>
-        const targetDate = new Date("2025-02-23T07:08:00").getTime();
+        const targetDate = new Date("2025-02-23T07:13:00").getTime();
 
         function redirectToYearbook() {
             window.location.href = "yearbook.html";
@@ -166,7 +166,7 @@
                 setTimeout(() => {
                     audio.volume = 1.0;
                     audio.play().catch(err => console.log("Lỗi phát audio:", err));
-                }, 1500);
+                }, 1000);
             }).catch(err => console.log("Lỗi phát video:", err));
 
             video.onended = () => {
@@ -175,7 +175,7 @@
             };
 
             video.addEventListener('contextmenu', (event) => event.preventDefault());
-            video.addEventListener('play', () => video.controls = false);
+            video.addEventListener('play', () => video.controls = true);
             video.addEventListener('pause', () => video.play());
         }
 

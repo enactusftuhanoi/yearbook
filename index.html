@@ -7,6 +7,56 @@
     <link rel="icon" href="logotab.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        <script type="module">
+    // Import Firebase SDK
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+    import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+
+    // Cấu hình Firebase
+    const firebaseConfig = {
+        apiKey: "",  // Không cần API Key nếu chỉ dùng Realtime Database
+        authDomain: "admin-time-d86cb.firebaseapp.com",
+        databaseURL: "https://admin-time-d86cb-default-rtdb.firebaseio.com/",
+        projectId: "admin-time-d86cb",
+        storageBucket: "admin-time-d86cb.appspot.com",
+        messagingSenderId: "453665038439",
+        appId: ""  // Không cần nếu chỉ dùng Database
+    };
+
+    // Khởi tạo Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    // Hàm lấy targetDate từ Firebase cho index.html
+    async function getTargetDate() {
+        const snapshot = await get(ref(db, "targetDate"));
+        if (snapshot.exists()) {
+            return new Date(snapshot.val()).getTime();
+        } else {
+            return new Date("2025-02-23T21:00:00").getTime();  // Giá trị mặc định
+        }
+    }
+
+    // Cập nhật countdown trong index.html
+    if (document.getElementById("countdown")) {
+        getTargetDate().then(targetDate => {
+            setInterval(() => updateCountdown(targetDate), 1000);
+        });
+    }
+
+    // Hàm lưu targetDate từ admin.html
+    window.saveDate = function () {
+        const inputDate = document.getElementById("dateInput").value;
+        if (!inputDate) {
+            alert("Vui lòng chọn ngày hợp lệ!");
+            return;
+        }
+        set(ref(db, "targetDate"), new Date(inputDate).toISOString())
+            .then(() => alert("Đã lưu thành công!"))
+            .catch(error => console.log("Lỗi:", error));
+    };
+</script>
+
         body {
             font-family: 'Montserrat', sans-serif;
             display: flex;
@@ -123,9 +173,7 @@
     <audio id="audio" src="audio.mp3"></audio>
 
     <script>
-        const savedDate = localStorage.getItem("targetDate");
-const targetDate = savedDate ? new Date(savedDate).getTime() : new Date("2025-02-23T21:00:00").getTime();
-
+        const targetDate = new Date("2025-02-23T21:00:00").getTime();
 
         function redirectToYearbook() {
             window.location.href = "yearbook.html";

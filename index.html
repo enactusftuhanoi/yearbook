@@ -49,17 +49,11 @@
             font-size: 1rem;
             color: #7f8c8d;
         }
-        .time-box {
-            margin-top: 20px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #2c3e50;
-        }
     </style>
 </head>
 <body>
     <img src="logo.png" alt="Logo" class="logo">
-    <h1 id="title">Coming soon</h1>
+    <h1>COMING SOON</h1>
     <div class="countdown-container" id="countdown">
         <div class="countdown-box"><span id="days">0</span><label>Days</label></div>
         <div class="countdown-box"><span id="hours">0</span><label>Hours</label></div>
@@ -100,16 +94,10 @@
             const now = Date.now();
             const distance = targetDate - now;
 
-            if (distance <= 0) {
-                document.getElementById("title").textContent = "Event Started!";
-                return;
-            }
-
-            document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
-            document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-            document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
-            document.getElementById("current-time").textContent = new Date().toLocaleString("vi-VN");
+            document.getElementById("days").textContent = Math.max(0, Math.floor(distance / (1000 * 60 * 60 * 24)));
+            document.getElementById("hours").textContent = Math.max(0, Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)));
+            document.getElementById("minutes").textContent = Math.max(0, Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)));
+            document.getElementById("seconds").textContent = Math.max(0, Math.floor((distance % (1000 * 60)) / 1000));
         }
     </script>
 </body>

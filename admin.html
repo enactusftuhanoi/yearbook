@@ -3,28 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trang Admin</title>
+    <title>Admin - Enactus FTU Hanoi</title>
     <link rel="icon" href="logotab.png">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
     <style>
         body {
             font-family: 'Montserrat', sans-serif;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
             height: 100vh;
             background-color: #f0f4f8;
             color: #2c3e50;
+            flex-direction: column;
             text-align: center;
             padding: 20px;
             margin: 0;
-        }
-        .logo {
-            width: 150px;
-            margin-bottom: 20px;
         }
         .container {
             background: white;
@@ -32,101 +26,103 @@
             border-radius: 15px;
             box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
         }
         h1 {
-            font-size: 1.8rem;
-            margin-bottom: 15px;
+            font-size: 24px;
+            margin-bottom: 20px;
         }
-        input {
+        input, button {
             width: 100%;
             padding: 10px;
             margin: 10px 0;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-            text-align: center;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+        }
+        input {
+            background: #ecf0f1;
         }
         button {
             background: #3498db;
             color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 1rem;
-            border-radius: 8px;
             cursor: pointer;
-            transition: background 0.3s;
-            margin-top: 10px;
         }
         button:hover {
             background: #2980b9;
         }
-        .confirmation-box {
-            display: none;
-            background: rgba(0, 0, 0, 0.8);
-            color: white;
-            padding: 20px;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            text-align: center;
-        }
-        .confirmation-box button {
-            background: #2ecc71;
+        .status {
+            margin-top: 15px;
+            font-size: 14px;
+            color: green;
         }
     </style>
 </head>
 <body>
-    <img src="logo.png" alt="Logo" class="logo">
     <div class="container">
-        <h1>Chỉnh sửa trang</h1>
-        <label for="datetime">Thời gian sự kiện:</label>
-        <input type="datetime-local" id="datetime">
-        <button onclick="updateContent()">Lưu thay đổi</button>
-    </div>
-
-    <div id="confirmation" class="confirmation-box">
-        <p>Cập nhật thành công!</p>
-        <button onclick="redirectToPage()">Xem trang</button>
+        <h1>Quản lý Countdown</h1>
+        <label>Thời gian hiện tại: <span id="current-date">Đang tải...</span></label>
+        <input type="datetime-local" id="new-date">
+        <button onclick="updateConfig()">Cập nhật</button>
+        <p class="status" id="status"></p>
     </div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyB-LOR6Vk_Qog4mMtxmnGKtW9p_Pp6cXGI",
-            authDomain: "admin-time-d86cb.firebaseapp.com",
-            databaseURL: "https://admin-time-d86cb-default-rtdb.firebaseio.com/",
-            projectId: "admin-time-d86cb",
-            storageBucket: "admin-time-d86cb.appspot.com",
-            messagingSenderId: "453665038439",
-            appId: "1:453665038439:web:1234567890abcdef"
-        };
-        
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
-        
-        function updateContent() {
-            const datetimeValue = document.getElementById("datetime").value;
-            if (!datetimeValue) {
-                alert("Vui lòng chọn thời gian trước khi lưu!");
-                return;
+        const username = "enactusftuhanoi";
+        const repo = "yearbook";
+        const filePath = "config.json";
+        const token = prompt("Nhập GitHub Token để cập nhật config.json:");
+
+        async function fetchCurrentDate() {
+            try {
+                const response = await fetch(`https://raw.githubusercontent.com/${username}/${repo}/main/${filePath}`);
+                const data = await response.json();
+                document.getElementById("current-date").textContent = data.targetDate;
+            } catch (error) {
+                console.error("Lỗi tải ngày từ GitHub:", error);
+                document.getElementById("current-date").textContent = "Không thể tải";
             }
-            
-            db.ref("events/mainEvent").set({ eventTime: datetimeValue })
-            .then(() => {
-                document.getElementById("confirmation").style.display = "block";
-            })
-            .catch(error => {
-                console.error("Lỗi cập nhật: ", error);
-                alert("Có lỗi xảy ra khi cập nhật!");
-            });
         }
 
-        function redirectToPage() {
-            window.location.href = "updated_page.html";
+        async function updateConfig() {
+            const newDate = document.getElementById("new-date").value;
+            if (!newDate) {
+                alert("Vui lòng chọn một ngày giờ hợp lệ!");
+                return;
+            }
+
+            const content = JSON.stringify({ targetDate: newDate }, null, 2);
+            const encodedContent = btoa(unescape(encodeURIComponent(content)));
+
+            try {
+                const response = await fetch(`https://api.github.com/repos/${username}/${repo}/contents/${filePath}`, {
+                    method: "GET",
+                    headers: { Authorization: `token ${token}` }
+                });
+                const fileData = await response.json();
+
+                await fetch(`https://api.github.com/repos/${username}/${repo}/contents/${filePath}`, {
+                    method: "PUT",
+                    headers: {
+                        Authorization: `token ${token}`,
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        message: "Cập nhật targetDate",
+                        content: encodedContent,
+                        sha: fileData.sha
+                    })
+                });
+
+                document.getElementById("status").textContent = "✅ Cập nhật thành công!";
+                fetchCurrentDate();
+            } catch (error) {
+                console.error("Lỗi cập nhật GitHub:", error);
+                document.getElementById("status").textContent = "❌ Lỗi cập nhật!";
+            }
         }
+
+        fetchCurrentDate();
     </script>
 </body>
 </html>

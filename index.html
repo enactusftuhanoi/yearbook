@@ -37,30 +37,19 @@
             object-fit: cover;
             transform: translate(-50%, -50%);
             display: block;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
     <img src="logo.png" alt="Logo" class="logo">
-    <video id="video" class="fullscreen-video" playsinline muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate" autoplay>
+    <video id="video" class="fullscreen-video" playsinline autoplay muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate" oncontextmenu="return false">
         <source src="video.mp4" type="video/mp4">
     </video>
-    <audio id="audio" src="audio.mp3"></audio>
 
     <script>
-        function redirectToYearbook() {
-            window.location.href = "yearbook.html";
-        }
-
-        document.getElementById("video").addEventListener("play", function() {
-            this.muted = false;
-            setTimeout(() => {
-                document.getElementById("audio").play().catch(err => console.log("Lỗi phát audio:", err));
-            }, 400);
-        });
-
         document.getElementById("video").onended = function() {
-            setTimeout(redirectToYearbook, 800);
+            window.location.href = "yearbook.html";
         };
     </script>
 </body>

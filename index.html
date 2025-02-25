@@ -27,6 +27,7 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
+            z-index: 2;
         }
         .fullscreen-video {
             position: fixed;
@@ -36,20 +37,48 @@
             height: 100vh;
             object-fit: cover;
             transform: translate(-50%, -50%);
-            display: block;
+            z-index: -1;
+            pointer-events: none;
+        }
+        audio {
+            display: none;
         }
     </style>
 </head>
 <body>
     <img src="logo.png" alt="Logo" class="logo">
-    <video id="video" class="fullscreen-video" playsinline controls>
+    
+    <video id="video" class="fullscreen-video" autoplay muted loop playsinline>
         <source src="video.mp4" type="video/mp4">
     </video>
+    
+    <audio id="audio" autoplay loop>
+        <source src="audio.mp3" type="audio/mp3">
+    </audio>
 
     <script>
-        document.getElementById("video").onended = function() {
-            window.location.href = "yearbook.html";
-        };
+        document.getElementById("video").removeAttribute("controls");
+
+        document.addEventListener("DOMContentLoaded", function () {
+            let audio = document.getElementById("audio");
+            let video = document.getElementById("video");
+
+            // Bỏ mute của video (có thể yêu cầu người dùng tương tác trước)
+            video.muted = false;
+
+            // Xử lý tự động phát nhạc trên trình duyệt yêu cầu tương tác
+            function playMedia() {
+                video.play();
+                audio.play().catch(error => console.log("Autoplay blocked:", error));
+                document.removeEventListener("click", playMedia);
+            }
+            document.addEventListener("click", playMedia);
+
+            // Chuyển hướng sau khi video kết thúc
+            video.onended = function() {
+                window.location.href = "yearbook.html";
+            };
+        });
     </script>
 </body>
 </html>

@@ -37,7 +37,7 @@
     </style>
 </head>
 <body>
-    <video id="video" class="fullscreen-video" autoplay loop playsinline>
+    <video id="video" class="fullscreen-video" autoplay muted loop playsinline>
         <source src="video.mp4" type="video/mp4">
     </video>
     
@@ -46,20 +46,19 @@
     </audio>
 
     <script>
-        document.getElementById("video").removeAttribute("controls");
-
         document.addEventListener("DOMContentLoaded", function () {
-            let audio = document.getElementById("audio");
             let video = document.getElementById("video");
+            let audio = document.getElementById("audio");
 
-            // Bỏ mute cho video
-            video.muted = false;
-
-            // Tự động phát video & âm thanh ngay khi tải trang
+            // Đảm bảo video tự chạy
             video.play().catch(error => console.log("Autoplay video bị chặn:", error));
-            audio.play().catch(error => console.log("Autoplay audio bị chặn:", error));
 
-            // Chuyển hướng sau khi video kết thúc
+            // Nếu âm thanh bị chặn, kích hoạt sau 1 giây
+            setTimeout(() => {
+                audio.play().catch(error => console.log("Autoplay audio bị chặn:", error));
+            }, 1000);
+
+            // Khi video kết thúc, chuyển trang
             video.onended = function() {
                 window.location.href = "yearbook.html";
             };

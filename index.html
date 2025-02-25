@@ -74,7 +74,7 @@
                     logo.style.display = "none";
                     screen.orientation.lock("landscape").catch(err => console.log("Không thể xoay ngang:", err));
                 }
-                document.body.addEventListener("touchend", () => {
+                document.body.addEventListener("click", () => {
                     audio.play().catch(err => console.log("Lỗi phát audio:", err));
                 }, { once: true });
                 setTimeout(() => {

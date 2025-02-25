@@ -15,19 +15,10 @@
             height: 100vh;
             background-color: #f0f4f8;
             color: #2c3e50;
-            flex-direction: column;
             text-align: center;
             padding: 20px;
             overflow: hidden;
             margin: 0;
-        }
-        .logo {
-            width: 150px;
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 2;
         }
         .fullscreen-video {
             position: fixed;
@@ -46,9 +37,7 @@
     </style>
 </head>
 <body>
-    <img src="logo.png" alt="Logo" class="logo">
-    
-    <video id="video" class="fullscreen-video" autoplay muted loop playsinline>
+    <video id="video" class="fullscreen-video" autoplay loop playsinline>
         <source src="video.mp4" type="video/mp4">
     </video>
     
@@ -63,16 +52,12 @@
             let audio = document.getElementById("audio");
             let video = document.getElementById("video");
 
-            // Bỏ mute của video (có thể yêu cầu người dùng tương tác trước)
+            // Bỏ mute cho video
             video.muted = false;
 
-            // Xử lý tự động phát nhạc trên trình duyệt yêu cầu tương tác
-            function playMedia() {
-                video.play();
-                audio.play().catch(error => console.log("Autoplay blocked:", error));
-                document.removeEventListener("click", playMedia);
-            }
-            document.addEventListener("click", playMedia);
+            // Tự động phát video & âm thanh ngay khi tải trang
+            video.play().catch(error => console.log("Autoplay video bị chặn:", error));
+            audio.play().catch(error => console.log("Autoplay audio bị chặn:", error));
 
             // Chuyển hướng sau khi video kết thúc
             video.onended = function() {

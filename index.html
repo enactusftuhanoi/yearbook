@@ -83,6 +83,7 @@
             display: none;
             pointer-events: none;
         }
+
         @media (max-width: 768px) {
             .countdown-container {
                 flex-wrap: wrap;
@@ -125,6 +126,16 @@
             window.location.href = "yearbook.html";
         }
 
+        function checkAndRedirect() {
+            const now = Date.now();
+            if (now >= targetDate) {
+                localStorage.setItem("countdownEnded", "true");
+                startVideoAndAudio();
+                return true;
+            }
+            return false;
+        }
+
         function startVideoAndAudio() {
             document.getElementById("countdown").classList.add("hidden");
             document.getElementById("title").classList.add("hidden");
@@ -134,27 +145,25 @@
             const logo = document.querySelector(".logo");
 
             video.style.display = "block";
+            video.muted = true; 
             video.play().then(() => {
-                video.muted = false;
-
+                console.log("Video đang phát...");
+                
                 if (window.innerWidth < 768) {
                     logo.style.display = "none";
                     screen.orientation.lock("landscape").catch(err => console.log("Không thể xoay ngang:", err));
                 }
 
-                document.body.addEventListener("touchend", () => {
-                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
-                }, { once: true });
-
                 setTimeout(() => {
+                    video.muted = false; 
                     audio.volume = 1.0;
                     audio.play().catch(err => console.log("Lỗi phát audio:", err));
                 }, 400);
 
-                localStorage.setItem("countdownEnded", "true");
             }).catch(err => console.log("Lỗi phát video:", err));
 
             video.onended = () => {
+                console.log("Video kết thúc, chờ 1 giây trước khi chuyển hướng...");
                 setTimeout(() => {
                     redirectToYearbook();
                 }, 800);
@@ -173,14 +182,14 @@
                 startVideoAndAudio();
                 return;
             }
-            
+
             document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
             document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
             document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
             document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
         }
 
-        if (localStorage.getItem("countdownEnded") === "true") {
+        if (localStorage.getItem("countdownEnded") === "true" || checkAndRedirect()) {
             startVideoAndAudio();
         } else {
             updateCountdown();

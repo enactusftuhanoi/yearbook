@@ -81,7 +81,8 @@
             object-fit: cover;
             transform: translate(-50%, -50%);
             display: none;
-            pointer-events: none;
+            z-index: 9999;
+            background: black;
         }
 
         @media (max-width: 768px) {
@@ -113,7 +114,7 @@
         </div>
     </div>
 
-    <video id="video" class="fullscreen-video" playsinline muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate">
+    <video id="video" class="fullscreen-video" playsinline disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate">
         <source src="video.mp4" type="video/mp4">
     </video>
 
@@ -121,39 +122,23 @@
 
     <script>
         const targetDate = new Date("2025-02-23T22:20:00").getTime();
+        let video = document.getElementById("video");
+        let audio = document.getElementById("audio");
 
         function redirectToYearbook() {
             window.location.href = "yearbook.html";
-        }
-
-        function checkAndRedirect() {
-            const now = Date.now();
-            if (now >= targetDate) {
-                localStorage.setItem("countdownEnded", "true");
-                startVideoAndAudio();
-                return true;
-            }
-            return false;
         }
 
         function startVideoAndAudio() {
             document.getElementById("countdown").classList.add("hidden");
             document.getElementById("title").classList.add("hidden");
 
-            const video = document.getElementById("video");
-            const audio = document.getElementById("audio");
-            const logo = document.querySelector(".logo");
-
             video.style.display = "block";
             video.muted = true; 
             video.play().then(() => {
                 console.log("Video đang phát...");
-                
-                if (window.innerWidth < 768) {
-                    logo.style.display = "none";
-                    screen.orientation.lock("landscape").catch(err => console.log("Không thể xoay ngang:", err));
-                }
 
+                // Kích hoạt âm thanh sau 0.4s (tương tự trên máy tính)
                 setTimeout(() => {
                     video.muted = false; 
                     audio.volume = 1.0;
@@ -179,6 +164,7 @@
             const distance = targetDate - now;
 
             if (distance <= 0) {
+                localStorage.setItem("countdownEnded", "true");
                 startVideoAndAudio();
                 return;
             }
@@ -189,12 +175,20 @@
             document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
         }
 
-        if (localStorage.getItem("countdownEnded") === "true" || checkAndRedirect()) {
+        // Kiểm tra nếu bộ đếm đã kết thúc trước đó thì bật lại video/audio ngay
+        if (localStorage.getItem("countdownEnded") === "true") {
             startVideoAndAudio();
         } else {
             updateCountdown();
             setInterval(updateCountdown, 1000);
         }
+
+        // Kích hoạt âm thanh trên điện thoại khi người dùng chạm vào màn hình
+        document.body.addEventListener("touchstart", () => {
+            audio.play().catch(err => console.log("Lỗi phát audio trên điện thoại:", err));
+            video.muted = false;
+        }, { once: true });
+
     </script>
 </body>
 </html>

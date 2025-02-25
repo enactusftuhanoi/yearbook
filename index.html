@@ -36,13 +36,12 @@
             object-fit: cover;
             transform: translate(-50%, -50%);
             display: none;
-            pointer-events: none;
         }
     </style>
 </head>
 <body>
     <img src="logo.png" alt="Logo" class="logo">
-    <video id="video" class="fullscreen-video" playsinline muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate">
+    <video id="video" class="fullscreen-video" playsinline muted autoplay disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate">
         <source src="video.mp4" type="video/mp4">
     </video>
     <audio id="audio" src="audio.mp3"></audio>
@@ -66,7 +65,7 @@
             const video = document.getElementById("video");
             const audio = document.getElementById("audio");
             const logo = document.querySelector(".logo");
-
+            
             video.style.display = "block";
             video.play().then(() => {
                 video.muted = false;

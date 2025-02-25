@@ -55,6 +55,7 @@
             object-fit: cover;
             transform: translate(-50%, -50%);
             display: none;
+            pointer-events: none;
         }
     </style>
 </head>
@@ -65,24 +66,34 @@
         <div id="countdown"></div>
     </div>
 
-    <video id="video" class="fullscreen-video" playsinline controls>
+    <video id="video" class="fullscreen-video" playsinline autoplay muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate">
         <source src="video.mp4" type="video/mp4">
     </video>
     
-    <audio id="audio" src="audio.mp3" controls></audio>
+    <audio id="audio" src="audio.mp3"></audio>
 
     <script>
-        const targetDate = new Date("2025-02-25T08:20:00").getTime();
+        const targetDate = new Date("2025-02-23T22:24:00").getTime();
         const video = document.getElementById("video");
         const audio = document.getElementById("audio");
+
+        function redirectToYearbook() {
+            window.location.href = "yearbook.html";
+        }
 
         function startVideoAndAudio() {
             document.getElementById("countdown").classList.add("hidden");
             document.getElementById("title").classList.add("hidden");
             video.style.display = "block";
-            video.play().catch(err => console.log("Lỗi phát video:", err));
-            audio.play().catch(err => console.log("Lỗi phát audio:", err));
-            localStorage.setItem("countdownFinished", "true");
+            video.play().then(() => {
+                setTimeout(() => {
+                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
+                }, 400);
+            }).catch(err => console.log("Lỗi phát video:", err));
+
+            video.onended = () => {
+                setTimeout(redirectToYearbook, 800);
+            };
         }
 
         function updateCountdown() {

@@ -15,7 +15,6 @@
             height: 100vh;
             background-color: #f0f4f8;
             color: #2c3e50;
-            flex-direction: column;
             text-align: center;
             padding: 20px;
             overflow: hidden;
@@ -27,24 +26,6 @@
             top: 20px;
             left: 50%;
             transform: translateX(-50%);
-        }
-        .content {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            flex-grow: 1;
-            width: 100%;
-        }
-        h1 {
-            font-size: clamp(1.5rem, 3vw, 2.5rem);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-        .hidden {
-            display: none;
         }
         .fullscreen-video {
             position: fixed;
@@ -61,62 +42,60 @@
 </head>
 <body>
     <img src="logo.png" alt="Logo" class="logo">
-    <div class="content" id="content">
-        <h1 id="title">Coming soon</h1>
-        <div id="countdown"></div>
-    </div>
-
-    <video id="video" class="fullscreen-video" playsinline autoplay muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate">
+    <video id="video" class="fullscreen-video" playsinline muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate">
         <source src="video.mp4" type="video/mp4">
     </video>
-    
     <audio id="audio" src="audio.mp3"></audio>
-
     <script>
-        const targetDate = new Date("2025-02-23T22:24:00").getTime();
-        const video = document.getElementById("video");
-        const audio = document.getElementById("audio");
-
+        const targetDate = new Date("2025-02-23T22:20:00").getTime();
+        
         function redirectToYearbook() {
             window.location.href = "yearbook.html";
         }
 
+        function checkAndRedirect() {
+            const now = Date.now();
+            if (now >= targetDate) {
+                startVideoAndAudio();
+                return true;
+            }
+            return false;
+        }
+
         function startVideoAndAudio() {
-            document.getElementById("countdown").classList.add("hidden");
-            document.getElementById("title").classList.add("hidden");
+            const video = document.getElementById("video");
+            const audio = document.getElementById("audio");
+            const logo = document.querySelector(".logo");
+
             video.style.display = "block";
             video.play().then(() => {
+                video.muted = false;
+                if (window.innerWidth < 768) {
+                    logo.style.display = "none";
+                    screen.orientation.lock("landscape").catch(err => console.log("Không thể xoay ngang:", err));
+                }
+                document.body.addEventListener("touchend", () => {
+                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
+                }, { once: true });
                 setTimeout(() => {
+                    audio.volume = 1.0;
                     audio.play().catch(err => console.log("Lỗi phát audio:", err));
                 }, 400);
             }).catch(err => console.log("Lỗi phát video:", err));
 
             video.onended = () => {
-                setTimeout(redirectToYearbook, 800);
+                setTimeout(() => {
+                    redirectToYearbook();
+                }, 800);
             };
+
+            video.addEventListener('contextmenu', (event) => event.preventDefault());
+            video.addEventListener('play', () => video.controls = false);
+            video.addEventListener('pause', () => video.play());
         }
 
-        function updateCountdown() {
-            const now = Date.now();
-            const distance = targetDate - now;
-
-            if (distance <= 0) {
-                startVideoAndAudio();
-                return;
-            }
-
-            document.getElementById("countdown").textContent = 
-                `${Math.floor(distance / (1000 * 60 * 60 * 24))} Days ` +
-                `${Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))} Hours ` +
-                `${Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60))} Minutes ` +
-                `${Math.floor((distance % (1000 * 60)) / 1000)} Seconds`;
-        }
-
-        if (localStorage.getItem("countdownFinished") === "true") {
-            startVideoAndAudio();
-        } else {
-            updateCountdown();
-            setInterval(updateCountdown, 1000);
+        if (!checkAndRedirect()) {
+            setInterval(checkAndRedirect, 1000);
         }
     </script>
 </body>

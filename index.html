@@ -123,55 +123,84 @@
     <audio id="audio" src="audio.mp3"></audio>
 
     <script>
-    function redirectToYearbook() {
-        window.location.href = "yearbook.html";
-    }
+        const targetDate = new Date("2025-02-23T22:20:00").getTime();
 
-    function startVideoAndAudio() {
-        document.getElementById("title").classList.add("hidden");
+        function redirectToYearbook() {
+            window.location.href = "yearbook.html";
+        }
 
-        const video = document.getElementById("video");
-        const audio = document.getElementById("audio");
-        const logo = document.querySelector(".logo");
+        function checkAndRedirect() {
+            const now = Date.now();
+            if (now >= targetDate) {
+                redirectToYearbook();
+                return true;
+            }
+            return false;
+        }
 
-        video.style.display = "block";
-        video.play().then(() => {
-            console.log("Video đang phát...");
-            video.muted = false;
+        function startVideoAndAudio() {
+            document.getElementById("countdown").classList.add("hidden");
+            document.getElementById("title").classList.add("hidden");
 
-            // Nếu là điện thoại, ẩn logo
-            if (window.innerWidth < 768) {
-                logo.style.display = "none";
-                screen.orientation.lock("landscape").catch(err => console.log("Không thể xoay ngang:", err));
+            const video = document.getElementById("video");
+            const audio = document.getElementById("audio");
+            const logo = document.querySelector(".logo");
+
+            video.style.display = "block";
+            video.play().then(() => {
+                console.log("Video đang phát...");
+                video.muted = false;
+
+                // Nếu là điện thoại, ẩn logo
+                if (window.innerWidth < 768) {
+                    logo.style.display = "none";
+                    screen.orientation.lock("landscape").catch(err => console.log("Không thể xoay ngang:", err));
+                }
+
+                // Chờ người dùng chạm vào màn hình để bật âm thanh trên điện thoại
+                document.body.addEventListener("touchend", () => {
+                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
+                }, { once: true });
+
+                // Tự động bật âm thanh sau 0.4 giây trên máy tính
+                setTimeout(() => {
+                    audio.volume = 1.0;
+                    audio.play().catch(err => console.log("Lỗi phát audio:", err));
+                }, 400);
+            }).catch(err => console.log("Lỗi phát video:", err));
+
+            video.onended = () => {
+                    console.log("Video kết thúc, chờ 1 giây trước khi chuyển hướng...");
+                    setTimeout(() => {
+                    redirectToYearbook();
+                }, 800);
+            };
+
+            video.addEventListener('contextmenu', (event) => event.preventDefault());
+            video.addEventListener('play', () => video.controls = false);
+            video.addEventListener('pause', () => video.play());
+        }
+
+        function updateCountdown() {
+            const now = Date.now();
+            const distance = targetDate - now;
+
+            if (distance <= 0) {
+                startVideoAndAudio();
+                return;
             }
 
-            // Chờ người dùng chạm vào màn hình để bật âm thanh trên điện thoại
-            document.body.addEventListener("touchend", () => {
-                audio.play().catch(err => console.log("Lỗi phát audio:", err));
-            }, { once: true });
+            document.getElementById("days").textContent = Math.floor(distance / (1000 * 60 * 60 * 24));
+            document.getElementById("hours").textContent = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            document.getElementById("minutes").textContent = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            document.getElementById("seconds").textContent = Math.floor((distance % (1000 * 60)) / 1000);
+        }
 
-            // Tự động bật âm thanh sau 0.4 giây trên máy tính
-            setTimeout(() => {
-                audio.volume = 1.0;
-                audio.play().catch(err => console.log("Lỗi phát audio:", err));
-            }, 400);
-        }).catch(err => console.log("Lỗi phát video:", err));
-
-        video.onended = () => {
-            console.log("Video kết thúc, chờ 1 giây trước khi chuyển hướng...");
-            setTimeout(() => {
-                redirectToYearbook();
-            }, 800);
-        };
-
-        video.addEventListener('contextmenu', (event) => event.preventDefault());
-        video.addEventListener('play', () => video.controls = false);
-        video.addEventListener('pause', () => video.play());
-    }
-
-    // Tự động chạy video và audio khi mở trang
-    window.onload = startVideoAndAudio;
-</script>
+        if (!checkAndRedirect()) {
+            updateCountdown();
+            setInterval(updateCountdown, 1000);
+        }
+    </script>
 </body>
 </html>
 

@@ -15,6 +15,7 @@
             height: 100vh;
             background-color: #f0f4f8;
             color: #2c3e50;
+            flex-direction: column;
             text-align: center;
             padding: 20px;
             overflow: hidden;
@@ -41,39 +42,26 @@
 </head>
 <body>
     <img src="logo.png" alt="Logo" class="logo">
-    <video id="video" class="fullscreen-video" playsinline muted autoplay disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate">
+    <video id="video" class="fullscreen-video" playsinline muted disablePictureInPicture controlsList="nodownload nofullscreen noplaybackrate" autoplay>
         <source src="video.mp4" type="video/mp4">
     </video>
-    <audio id="audio" src="audio.mp3" autoplay></audio>
+    <audio id="audio" src="audio.mp3"></audio>
+
     <script>
-        const video = document.getElementById("video");
-        const audio = document.getElementById("audio");
-        const logo = document.querySelector(".logo");
+        function redirectToYearbook() {
+            window.location.href = "yearbook.html";
+        }
 
-        video.play().then(() => {
-            video.muted = false;
-            if (window.innerWidth < 768) {
-                logo.style.display = "none";
-                screen.orientation.lock("landscape").catch(err => console.log("Không thể xoay ngang:", err));
-            }
-            document.body.addEventListener("click", () => {
-                audio.play().catch(err => console.log("Lỗi phát audio:", err));
-            }, { once: true });
+        document.getElementById("video").addEventListener("play", function() {
+            this.muted = false;
             setTimeout(() => {
-                audio.volume = 1.0;
-                audio.play().catch(err => console.log("Lỗi phát audio:", err));
+                document.getElementById("audio").play().catch(err => console.log("Lỗi phát audio:", err));
             }, 400);
-        }).catch(err => console.log("Lỗi phát video:", err));
+        });
 
-        video.onended = () => {
-            setTimeout(() => {
-                window.location.href = "yearbook.html";
-            }, 800);
+        document.getElementById("video").onended = function() {
+            setTimeout(redirectToYearbook, 800);
         };
-
-        video.addEventListener('contextmenu', (event) => event.preventDefault());
-        video.addEventListener('play', () => video.controls = false);
-        video.addEventListener('pause', () => video.play());
     </script>
 </body>
 </html>
